@@ -1,0 +1,6 @@
+@import './base.css';
+@import 'tailwindcss';
+
+@theme {
+  --color-hijautua: #44911f;
+}

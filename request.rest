@@ -1,0 +1,27 @@
+###
+GET https://mongokopikan.vercel.app/products/67b3146c79c03ecc84b38a4a
+Content-Type: application/json
+
+###
+GET https://mongokopikan.vercel.app/products/1
+Content-Type: application/json
+
+{
+  "image": "/src/assets/product-images/ArenLatte.png",
+  "title": "Aren Latte",
+  "price": 29000,
+  "desc": "Rasa alami gula aren berpadu sempurna dengan espresso premium",
+  "category": "Signature"
+}
+
+###
+PATCH https://mongokopikan.vercel.app/products/1
+Content-Type: application/json
+
+{
+  "image": "/src/assets/product-images/ArenLatte.png",
+  "title": "Aren Latte",
+  "price": 29000,
+  "desc": "Rasa alami gula aren berpadu sempurna dengan espresso premium",
+  "category": "Signature"
+}
