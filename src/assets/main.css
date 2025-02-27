@@ -2,5 +2,6 @@
 @import 'tailwindcss';
 
 @theme {
+  --color-hijau: #36cd1d;
   --color-hijautua: #44911f;
 }
