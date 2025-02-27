@@ -1,6 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <div :class="'p-6 pt-0'">
+  <div :class="'text-sm text-gray-600'">
     <slot></slot>
   </div>
 </template>

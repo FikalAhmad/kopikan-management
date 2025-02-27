@@ -7,9 +7,52 @@
       <img src="/images/logotype-hijau.webp" alt="Logo" class="w-48" />
     </div>
     <div class="flex flex-col justify-center p-4 gap-3 w-full">
-      <AppNavLink to="/">Home</AppNavLink>
-      <AppNavLink to="/analytics">Analytics</AppNavLink>
-      <AppNavLink to="/user">User</AppNavLink>
+      <div class="text-[4px] px-4 font-bold text-gray-500 mt-2">OVERVIEW</div>
+      <AppNavLink to="/" class="flex gap-3">
+        <img
+          src="../components/icons/dashboard-icon.svg"
+          alt="dashboard-icon"
+          class="group-hover:invert group-focus:invert"
+        />
+        Home</AppNavLink
+      >
+      <AppNavLink to="/analytics" class="flex gap-3">
+        <img
+          src="../components/icons/analytic-icon.svg"
+          alt="analytics-icon"
+          class="group-hover:invert group-focus:invert group-focus`:invert"
+        />Analytics</AppNavLink
+      >
+      <div class="text-[4px] font-bold text-gray-500 mt-2 px-4">MANAGEMENT</div>
+      <AppNavLink to="/user" class="flex gap-3"
+        ><img
+          src="../components/icons/user-icon.svg"
+          alt="user-icon"
+          class="group-hover:invert group-focus:invert"
+        />User</AppNavLink
+      >
+      <AppNavLink to="/product" class="flex gap-3"
+        ><img
+          src="../components/icons/product-icon.svg"
+          alt="product-icon"
+          class="group-hover:invert group-focus:invert"
+        />Product</AppNavLink
+      >
+      <AppNavLink to="/order" class="flex gap-3"
+        ><img
+          src="../components/icons/order-icon.svg"
+          alt="order-icon"
+          class="group-hover:invert group-focus:invert"
+        />Order</AppNavLink
+      >
+      <AppNavLink to="/payment" class="flex gap-3"
+        ><img
+          src="../components/icons/payment-icon.svg"
+          alt="payment-icon"
+          class="group-hover:invert group-focus:invert"
+        />Payment</AppNavLink
+      >
+
       <button
         :class="['px-4 py-2 rounded-lg font-medium  hover:text-white hover:bg-hijautua/75']"
         @click="toggleDropdown"
@@ -27,10 +70,6 @@
           <AppNavLink to="/">Edit User</AppNavLink>
         </div>
       </div>
-
-      <AppNavLink to="/product">Product</AppNavLink>
-      <AppNavLink to="/order">Order</AppNavLink>
-      <AppNavLink to="/payment">Payment</AppNavLink>
     </div>
   </aside>
 </template>

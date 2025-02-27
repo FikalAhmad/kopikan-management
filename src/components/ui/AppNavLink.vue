@@ -1,8 +1,9 @@
 <template>
   <router-link
     :to="props.to"
+    :aria-checked="isActive.toString()"
     :class="[
-      'flex px-4 py-2 rounded-lg font-medium transition-all hover:text-white hover:bg-hijautua/75',
+      'flex px-4 py-2 rounded-lg font-medium transition-all hover:text-white hover:bg-hijautua/85  group',
       isActive ? 'bg-hijautua text-white' : '',
     ]"
   >

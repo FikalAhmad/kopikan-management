@@ -1,6 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <div :class="'p-6 pt-0'">
+  <div :class="'font-semibold leading-none tracking-tight'">
     <slot></slot>
   </div>
 </template>

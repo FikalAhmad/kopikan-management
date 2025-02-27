@@ -1,6 +1,6 @@
 <template>
   <div class="h-16 border-b-2 border-gray-100 flex justify-between items-center p-4 relative">
-    <Button @click="emit('toggle-sidebar')" variant="ghost" class="p-1">
+    <Button @click="emit('toggle-sidebar')" variant="ghost" size="icon" class="p-1">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -33,8 +33,13 @@
       </svg>
     </Button>
 
-    <Button @click="isProfileSidebar" variant="ghost" class="cursor-pointer rounded-full">
-      <img src="/images/barista.jpg" alt="Avatar" class="w-10 h-10 rounded-full shadow-lg" />
+    <Button
+      @click="isProfileSidebar"
+      variant="ghost"
+      class="cursor-pointer rounded-full"
+      size="icon"
+    >
+      <img src="/images/barista.jpg" alt="Avatar" class="rounded-full shadow-lg" />
     </Button>
     <AppProfileSidebar :visible="toggleProfileSidebar" @close-sidebar="isProfileSidebar" />
   </div>

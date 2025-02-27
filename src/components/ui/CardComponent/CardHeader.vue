@@ -1,6 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <div :class="'p-6 pt-0'">
+  <div :class="'flex flex-col space-y-1.5 p-6'">
     <slot></slot>
   </div>
 </template>

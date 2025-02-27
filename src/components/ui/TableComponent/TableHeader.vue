@@ -1,6 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <div :class="'p-6 pt-0'">
+  <thead :class="'[&_tr]:border-b'">
     <slot></slot>
-  </div>
+  </thead>
 </template>
