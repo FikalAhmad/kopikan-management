@@ -8,11 +8,11 @@
     </div>
     <div class="flex flex-col justify-center p-4 gap-3 w-full">
       <div class="text-[4px] px-4 font-bold text-gray-500 mt-2">OVERVIEW</div>
-      <AppNavLink to="/" class="flex gap-3">
+      <AppNavLink to="/dashboard" class="flex gap-3">
         <img
           src="../components/icons/dashboard-icon.svg"
           alt="dashboard-icon"
-          class="group-hover:invert group-focus:invert"
+          class="group-hover:invert"
         />
         Home</AppNavLink
       >
@@ -20,7 +20,7 @@
         <img
           src="../components/icons/analytic-icon.svg"
           alt="analytics-icon"
-          class="group-hover:invert group-focus:invert group-focus`:invert"
+          class="group-hover:invert"
         />Analytics</AppNavLink
       >
       <div class="text-[4px] font-bold text-gray-500 mt-2 px-4">MANAGEMENT</div>
@@ -28,28 +28,28 @@
         ><img
           src="../components/icons/user-icon.svg"
           alt="user-icon"
-          class="group-hover:invert group-focus:invert"
+          class="group-hover:invert"
         />User</AppNavLink
       >
       <AppNavLink to="/product" class="flex gap-3"
         ><img
           src="../components/icons/product-icon.svg"
           alt="product-icon"
-          class="group-hover:invert group-focus:invert"
+          class="group-hover:invert"
         />Product</AppNavLink
       >
       <AppNavLink to="/order" class="flex gap-3"
         ><img
           src="../components/icons/order-icon.svg"
           alt="order-icon"
-          class="group-hover:invert group-focus:invert"
+          class="group-hover:invert"
         />Order</AppNavLink
       >
       <AppNavLink to="/payment" class="flex gap-3"
         ><img
           src="../components/icons/payment-icon.svg"
           alt="payment-icon"
-          class="group-hover:invert group-focus:invert"
+          class="group-hover:invert"
         />Payment</AppNavLink
       >
 
