@@ -8,7 +8,13 @@ import {
 } from '@/components/ui/CardComponent'
 import { FormInput, FormLabel } from '@/components/ui/FormComponent'
 import { Button } from '@/components/ui/ButtonComponent'
-import { reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
+import { useRoute } from 'vue-router'
+import { useUserStore } from '@/store/useUserStore'
+
+const route = useRoute()
+const userStore = useUserStore()
+const userId = route.params.id as string
 
 const formData = reactive<{
   name: string
@@ -20,27 +26,16 @@ const formData = reactive<{
   password: '',
 })
 
-const editUser = async () => {
-  try {
-    const response = await fetch(import.meta.env.VITE_APP_USER, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-
-    if (response.ok) {
-      alert('User updated successfully')
-    }
-  } catch (error) {
-    console.error('Error updating user:', error)
-    alert('Failed to update user')
+onMounted(() => {
+  const user = userStore.users?.find((u) => u.id === userId)
+  if (user) {
+    formData.name = user.name
+    formData.email = user.email
   }
-}
+})
 
 const handleSubmit = () => {
-  editUser()
+  userStore.updateUser(userId, formData)
   formData.name = ''
   formData.email = ''
   formData.password = ''
@@ -61,7 +56,12 @@ const handleSubmit = () => {
           <FormInput v-model="formData.name" placeholder="Enter user name here">
             <FormLabel>Name</FormLabel>
           </FormInput>
-          <FormInput v-model="formData.email" type="email" placeholder="Enter user email here">
+          <FormInput
+            v-model="formData.email"
+            type="email"
+            placeholder="Enter user email here"
+            disabled
+          >
             <FormLabel>Email</FormLabel>
           </FormInput>
           <FormInput
@@ -71,7 +71,7 @@ const handleSubmit = () => {
           >
             <FormLabel>Password</FormLabel>
           </FormInput>
-          <Button class="w-full">Create User</Button>
+          <Button class="w-full" type="submit">Edit User</Button>
         </form>
       </CardContent>
     </Card>

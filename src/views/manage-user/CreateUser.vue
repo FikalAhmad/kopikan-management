@@ -9,6 +9,7 @@ import {
 import { FormInput, FormLabel } from '@/components/ui/FormComponent'
 import { Button } from '@/components/ui/ButtonComponent'
 import { reactive } from 'vue'
+import { useUserStore } from '@/store/useUserStore'
 
 const formData = reactive<{
   name: string
@@ -20,25 +21,15 @@ const formData = reactive<{
   password: '',
 })
 
+const userStore = useUserStore()
+
 const addUser = async () => {
   try {
-    const response = await fetch(import.meta.env.VITE_APP_USER, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-
-    if (response.ok) {
-      alert('User added successfully')
-    }
+    userStore.createUser(formData)
   } catch (error) {
-    console.error('Error adding user:', error)
-    alert('Failed to add user')
+    console.error(error)
   }
 }
-
 const handleSubmit = () => {
   addUser()
   formData.name = ''
@@ -71,7 +62,7 @@ const handleSubmit = () => {
           >
             <FormLabel>Password</FormLabel>
           </FormInput>
-          <Button class="w-full">Create User</Button>
+          <Button class="w-full" type="submit">Create User</Button>
         </form>
       </CardContent>
     </Card>

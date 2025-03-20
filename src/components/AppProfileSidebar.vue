@@ -1,6 +1,6 @@
 <template>
   <div
-    class="max-w-0 fixed top-0 right-0 h-screen w-64 bg-white shadow-lg transition-[max-width] duration-500 ease-in-out rounded-l-lg overflow-x-hidden"
+    class="max-w-0 fixed top-0 right-0 h-screen w-64 bg-white shadow-lg transition-[max-width] duration-500 ease-in-out rounded-l-lg overflow-x-hidden z-10"
     :class="visible && 'max-w-lg'"
   >
     <div class="flex flex-col h-full items-center justify-between">
@@ -27,25 +27,32 @@
           </svg>
         </button>
       </div>
-      <div>
+      <div class="flex flex-col gap-2">
         <div class="rounded-full shadow-lg w-20">
           <img src="/images/barista.jpg" alt="Avatar" class="w-20 h-20 rounded-full" />
         </div>
         <div class="flex flex-col items-center gap-1">
-          <div class="font-semibold text-lg">John Doe</div>
+          <div class="font-semibold text-lg">{{ authStore.user?.name }}</div>
           <div class="text-sm">Admin</div>
         </div>
       </div>
       <div>
-        <AppButton variant="danger">Logout</AppButton>
+        <AppButton variant="danger" @click="handleLogout">Logout</AppButton>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '@/store/auth'
 import AppButton from './ui/ButtonComponent/AppButton.vue'
 
 const emit = defineEmits(['close-sidebar'])
 defineProps<{ visible: boolean }>()
+
+const authStore = useAuthStore()
+
+const handleLogout = () => {
+  authStore.logout()
+}
 </script>

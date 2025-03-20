@@ -9,6 +9,7 @@ const routes = [
   {
     path: '/',
     component: DefaultLayout,
+    meta: { requiresAuth: true },
     children: [
       { path: 'dashboard', name: 'homepage', component: LandingPage, meta: { requiresAuth: true } },
       {
@@ -34,6 +35,7 @@ const routes = [
         path: 'user/edit/:id',
         name: 'edit-user',
         component: () => import('@/views/manage-user/EditUser.vue'),
+        sensitive: true,
         meta: { requiresAuth: true },
       },
 
@@ -41,6 +43,19 @@ const routes = [
         path: 'product',
         name: 'product-management',
         component: () => import('@/views/manage-product/ProductList.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'product/create',
+        name: 'create-product',
+        component: () => import('@/views/manage-product/CreateProduct.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'product/edit/:id',
+        name: 'edit-product',
+        component: () => import('@/views/manage-product/EditProduct.vue'),
+        sensitive: true,
         meta: { requiresAuth: true },
       },
       {

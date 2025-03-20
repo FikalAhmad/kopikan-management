@@ -53,7 +53,7 @@
         />Payment</AppNavLink
       >
 
-      <button
+      <!-- <button
         :class="['px-4 py-2 rounded-lg font-medium  hover:text-white hover:bg-hijautua/75']"
         @click="toggleDropdown"
       >
@@ -69,21 +69,21 @@
         <div class="">
           <AppNavLink to="/">Edit User</AppNavLink>
         </div>
-      </div>
+      </div> -->
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+// import { ref } from 'vue'
 import AppNavLink from './ui/AppNavLink.vue'
 
 defineProps<{ visible: boolean }>()
 
-const openDropdown = ref<boolean>(false)
+// const openDropdown = ref<boolean>(false)
 
-const toggleDropdown = () => {
-  openDropdown.value = !openDropdown.value
-}
+// const toggleDropdown = () => {
+//   openDropdown.value = !openDropdown.value
+// }
 </script>
 <style></style>
