@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import LandingPage from '@/views/LandingPage.vue'
+import LandingPage from '@/views/landing-page/LandingPage.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import { useAuthStore } from '@/store/auth'
@@ -12,12 +12,6 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       { path: 'dashboard', name: 'homepage', component: LandingPage, meta: { requiresAuth: true } },
-      {
-        path: 'analytics',
-        name: 'analytics',
-        component: () => import('@/views/AnalyticsPage.vue'),
-        meta: { requiresAuth: true },
-      },
 
       {
         path: 'user',
@@ -56,6 +50,24 @@ const routes = [
         name: 'edit-product',
         component: () => import('@/views/manage-product/EditProduct.vue'),
         sensitive: true,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'discount',
+        name: 'discount-management',
+        component: () => import('@/views/manage-discount/DiscountList.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'discount/create',
+        name: 'create-discount',
+        component: () => import('@/views/manage-discount/CreateDiscount.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'discount/edit/:id',
+        name: 'edit-discount',
+        component: () => import('@/views/manage-discount/EditDiscount.vue'),
         meta: { requiresAuth: true },
       },
       {

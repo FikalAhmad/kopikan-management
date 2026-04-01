@@ -1,15 +1,7 @@
-import axios from 'axios'
+import { axiosJWT } from '@/lib/axios'
+import type { ProductInput, ProductProps } from '@/types/product.types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-interface ProductProps {
-  _id: string
-  image: string
-  title: string
-  price: number
-  desc: string
-  category: string
-}
 
 export const useProductStore = defineStore(
   'product',
@@ -18,35 +10,27 @@ export const useProductStore = defineStore(
 
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_PRODUCT}/products`, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
-        })
+        const response = await axiosJWT.get('/api/products')
         if (response.data) {
-          products.value = response?.data
+          products.value = response?.data.data
         }
       } catch (error) {
         console.error('Error fetching products:', error)
       }
     }
 
-    const createProduct = async (productData: Omit<ProductProps, '_id'>) => {
+    const createProduct = async (productData: ProductInput) => {
       try {
-        await axios.post(`${import.meta.env.VITE_APP_PRODUCT}/products`, productData)
+        await axiosJWT.post('/api/products', productData)
         fetchProduct()
       } catch (error) {
         console.error('Error creating product:', error)
       }
     }
 
-    const updateProduct = async (_id: string, productData: Omit<ProductProps, '_id'>) => {
+    const updateProduct = async (id: string, productData: Partial<ProductInput>) => {
       try {
-        const response = await axios.patch(
-          `${import.meta.env.VITE_APP_PRODUCT}/products/${_id}`,
-          productData,
-        )
+        const response = await axiosJWT.patch(`/api/products/${id}`, productData)
         if (response.data) {
           fetchProduct()
           window.location.href = '/product'
@@ -58,7 +42,7 @@ export const useProductStore = defineStore(
 
     const deleteProduct = async (id: string) => {
       try {
-        await axios.delete(`${import.meta.env.VITE_APP_PRODUCT}/products/${id}`)
+        await axiosJWT.delete(`/api/products/${id}`)
         fetchProduct()
       } catch (error) {
         console.error('Error deleting product:', error)

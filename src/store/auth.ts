@@ -19,7 +19,7 @@ export const useAuthStore = defineStore(
     const login = async (email: string, password: string) => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_APP_USER}/api/login`,
+          `${import.meta.env.VITE_APP_API}/api/login`,
           {
             email,
             password,
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore(
 
     const refreshToken = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_USER}/api/token`, {
+        const response = await axios.get(`${import.meta.env.VITE_APP_API}/api/token`, {
           headers: {
             'Content-Type': 'application/json',
           },

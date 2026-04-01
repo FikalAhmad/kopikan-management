@@ -1,79 +1,130 @@
 <script setup lang="ts">
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/CardComponent'
-import { FormInput, FormLabel } from '@/components/ui/FormComponent'
-import { Button } from '@/components/ui/ButtonComponent'
-import { onMounted, reactive } from 'vue'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/store/useUserStore'
+import { Button } from '@/components/ui/button'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+import { useForm } from 'vee-validate'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const route = useRoute()
 const userStore = useUserStore()
 const userId = route.params.id as string
 
-const formData = reactive<{
-  name: string
-  email: string
-  password: string
-}>({
-  name: '',
-  email: '',
-  password: '',
+const formSchema = toTypedSchema(
+  z.object({
+    name: z.string().min(1).max(100).optional(),
+    password: z
+      .string()
+      .min(5, { message: 'Password must be 5 or more characters long' })
+      .max(100)
+      .optional(),
+    phone: z.string().min(1).max(15).optional(),
+  }),
+)
+
+const form = useForm({
+  validationSchema: formSchema,
 })
 
 onMounted(() => {
   const user = userStore.users?.find((u) => u.id === userId)
   if (user) {
-    formData.name = user.name
-    formData.email = user.email
+    form.setValues(user)
   }
 })
 
-const handleSubmit = () => {
-  userStore.updateUser(userId, formData)
-  formData.name = ''
-  formData.email = ''
-  formData.password = ''
-}
+const onSubmit = form.handleSubmit((values) => {
+  userStore.updateUser(userId, values)
+})
 </script>
 <template>
-  <div class="mx-10 mt-5">
-    <div class="flex justify-between">
-      <div class="text-2xl font-semibold">User Management</div>
-    </div>
-    <Card class="mt-10">
-      <CardHeader>
-        <CardTitle>Edit User</CardTitle>
-        <CardDescription>Edit user here</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form @submit.prevent="handleSubmit" class="space-y-4">
-          <FormInput v-model="formData.name" placeholder="Enter user name here">
+  <Card class="m-5">
+    <CardHeader>
+      <CardTitle>Edit User</CardTitle>
+      <CardDescription>Edit user here</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <form @submit.prevent="onSubmit" class="space-y-4">
+        <FormField v-slot="{ componentField }" name="name">
+          <FormItem>
             <FormLabel>Name</FormLabel>
-          </FormInput>
-          <FormInput
-            v-model="formData.email"
-            type="email"
-            placeholder="Enter user email here"
-            disabled
-          >
-            <FormLabel>Email</FormLabel>
-          </FormInput>
-          <FormInput
-            v-model="formData.password"
-            type="password"
-            placeholder="Enter user password here"
-          >
+            <FormControl>
+              <Input v-bind="componentField" placeholder="Enter user name here"> </Input>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="email">
+          <FormItem>
+            <FormControl>
+              <FormLabel>Email</FormLabel>
+              <Input
+                v-bind="componentField"
+                type="email"
+                placeholder="Enter user email here"
+                disabled
+              >
+              </Input>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="password">
+          <FormItem>
             <FormLabel>Password</FormLabel>
-          </FormInput>
-          <Button class="w-full" type="submit">Edit User</Button>
-        </form>
-      </CardContent>
-    </Card>
-  </div>
+            <FormControl>
+              <Input v-bind="componentField" type="password" placeholder="Enter user password here">
+              </Input>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="phone">
+          <FormItem>
+            <FormLabel>Phone</FormLabel>
+            <FormControl>
+              <Input v-bind="componentField" type="text" placeholder="Enter user phone here">
+              </Input>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="role_id">
+          <FormItem>
+            <FormLabel>Role</FormLabel>
+            <FormControl>
+              <Select v-bind="componentField" disabled>
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="67e3011960094b86083ac359">Admin</SelectItem>
+                    <SelectItem value="6800a52eea8560606cbc4a25">Customer</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormControl>
+          </FormItem>
+        </FormField>
+        <Button class="w-full" type="submit">Edit User</Button>
+      </form>
+    </CardContent>
+  </Card>
 </template>

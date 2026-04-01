@@ -12,10 +12,13 @@ const toggleProfile = () => {
 
 <template>
   <div class="flex">
-    <div class="">
+    <div class="relative">
       <AppSidebar :visible="isSidebarVisible" />
     </div>
-    <div class="w-full">
+    <div
+      class="w-full transition-all duration-300 overflow-x-hidden"
+      :class="isSidebarVisible ? 'ml-72' : 'ml-0'"
+    >
       <AppTopbar @toggle-sidebar="toggleProfile" />
       <RouterView />
     </div>

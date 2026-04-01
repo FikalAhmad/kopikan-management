@@ -3,7 +3,7 @@ import type { User } from '@/types/auth.types'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
-const baseURL = import.meta.env.VITE_APP_USER
+const baseURL = import.meta.env.VITE_APP_API
 
 export const axiosJWT = axios.create({
   baseURL,

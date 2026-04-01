@@ -27,7 +27,7 @@
           </svg>
         </button>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 items-center">
         <div class="rounded-full shadow-lg w-20">
           <img src="/images/barista.jpg" alt="Avatar" class="w-20 h-20 rounded-full" />
         </div>
@@ -37,7 +37,7 @@
         </div>
       </div>
       <div>
-        <AppButton variant="danger" @click="handleLogout">Logout</AppButton>
+        <Button variant="destructive" @click="handleLogout">Logout</Button>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
-import AppButton from './ui/ButtonComponent/AppButton.vue'
+import Button from './ui/button/Button.vue'
 
 const emit = defineEmits(['close-sidebar'])
 defineProps<{ visible: boolean }>()

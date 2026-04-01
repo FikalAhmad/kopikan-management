@@ -6,27 +6,46 @@ import { ref } from 'vue'
 export const useUserStore = defineStore(
   'user',
   () => {
-    const users = ref<{ id: string; name: string; email: string }[]>()
+    const users = ref<
+      {
+        id: string
+        name: string
+        email: string
+        phone: string
+        role_id: string
+        role: { role_name: string }
+      }[]
+    >()
 
     const fetchUsers = async () => {
       try {
         const response = await axiosJWT.get('/api/users')
         if (response.data) {
-          users.value = response.data
+          users.value = response.data.data
         }
       } catch (error) {
         console.error('Error fetching users:', error)
       }
     }
 
-    const createUser = async (userData: { name: string; email: string; password: string }) => {
+    const createUser = async (userData: {
+      name: string
+      email: string
+      password: string
+      phone: string
+      role_id: string
+    }) => {
       try {
-        const response = await axios.post(`${import.meta.env.VITE_APP_USER}/api/users`, userData, {
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await axios.post(
+          `${import.meta.env.VITE_APP_API}/api/register`,
+          userData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            withCredentials: true,
           },
-          withCredentials: true,
-        })
+        )
         if (response.data) {
           fetchUsers()
           window.location.href = '/user'
@@ -38,7 +57,7 @@ export const useUserStore = defineStore(
 
     const updateUser = async (
       id: string,
-      userData: { name: string; email: string; password: string },
+      userData: { name?: string; password?: string; phone?: string },
     ) => {
       try {
         const response = await axiosJWT.patch(`/api/users/${id}`, userData)
