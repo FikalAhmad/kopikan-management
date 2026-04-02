@@ -1,4 +1,5 @@
 import { axiosJWT } from '@/lib/axios'
+import type { QueryParams } from '@/types/global.types'
 import type { ProductInput, ProductProps } from '@/types/product.types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -6,13 +7,22 @@ import { ref } from 'vue'
 export const useProductStore = defineStore(
   'product',
   () => {
-    const products = ref<ProductProps[]>()
+    const products = ref<{
+      success: boolean
+      data: ProductProps[]
+      pagination: {
+        total: number
+        page: number
+        pageSize: number
+        totalPages: number
+      }
+    }>()
 
-    const fetchProduct = async () => {
+    const fetchProduct = async ({ page = '1', pageSize = '10' }: QueryParams = {}) => {
       try {
-        const response = await axiosJWT.get('/api/products')
+        const response = await axiosJWT.get(`/api/products?page=${page}&pageSize=${pageSize}`)
         if (response.data) {
-          products.value = response?.data.data
+          products.value = response?.data
         }
       } catch (error) {
         console.error('Error fetching products:', error)

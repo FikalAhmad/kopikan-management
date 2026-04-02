@@ -23,11 +23,24 @@ const isProfileSidebar = () => {
     <Button
       @click="isProfileSidebar"
       variant="ghost"
-      class="cursor-pointer rounded-full"
+      class="cursor-pointer rounded-full hover:scale-105 w-12 h-12 transition-all duration-200s border-4 border-black/50"
       size="icon"
     >
       <img src="/images/barista.jpg" alt="Avatar" class="rounded-full shadow-lg" />
     </Button>
+    <transition
+      enter-active-class="transition-opacity duration-300"
+      enter-from-class="opacity-0"
+      leave-active-class="transition-opacity duration-300"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="toggleProfileSidebar"
+        class="fixed inset-0 bg-gray-500/50 backdrop-blur-sm z-40 pointer-events-auto"
+        @click="isProfileSidebar"
+      ></div>
+    </transition>
+
     <AppProfileSidebar :visible="toggleProfileSidebar" @close-sidebar="isProfileSidebar" />
   </div>
 </template>

@@ -1,9 +1,9 @@
 <template>
   <div
-    class="max-w-0 fixed top-0 right-0 h-screen w-64 bg-white shadow-lg transition-[max-width] duration-500 ease-in-out rounded-l-lg overflow-x-hidden z-10"
-    :class="visible && 'max-w-lg'"
+    class="fixed top-0 right-0 h-screen bg-white shadow-2xl transition-all duration-500 ease-in-out border-l border-gray-100 z-[9999] overflow-hidden"
+    :class="[visible ? 'w-80 opacity-100 translate-x-0' : 'w-0 opacity-0 translate-x-full']"
   >
-    <div class="flex flex-col h-full items-center justify-between">
+    <div class="flex flex-col h-full items-center justify-between p-6 w-80">
       <div class="w-full">
         <button
           @click="emit('close-sidebar')"
@@ -27,17 +27,17 @@
           </svg>
         </button>
       </div>
-      <div class="flex flex-col gap-2 items-center">
-        <div class="rounded-full shadow-lg w-20">
-          <img src="/images/barista.jpg" alt="Avatar" class="w-20 h-20 rounded-full" />
+      <div class="flex flex-col items-center gap-4 w-full whitespace-nowrap">
+        <div class="rounded-full ring-4 ring-gray-50 shadow-xl overflow-hidden">
+          <img src="/images/barista.jpg" alt="Avatar" class="w-32 h-32 object-cover" />
         </div>
         <div class="flex flex-col items-center gap-1">
-          <div class="font-semibold text-lg">{{ authStore.user?.name }}</div>
-          <div class="text-sm">Admin</div>
+          <div class="font-bold text-2xl text-gray-800">{{ authStore.user?.name || 'Admin User' }}</div>
+          <div class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{{}}</div>
         </div>
       </div>
-      <div>
-        <Button variant="destructive" @click="handleLogout">Logout</Button>
+      <div class="w-full pb-8">
+        <Button variant="destructive" class="w-full py-4 text-lg font-bold" @click="handleLogout">Logout</Button>
       </div>
     </div>
   </div>
@@ -51,6 +51,7 @@ const emit = defineEmits(['close-sidebar'])
 defineProps<{ visible: boolean }>()
 
 const authStore = useAuthStore()
+console.log(authStore.user)
 
 const handleLogout = () => {
   authStore.logout()

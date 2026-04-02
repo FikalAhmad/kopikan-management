@@ -1,12 +1,8 @@
 import { axiosJWT } from '@/lib/axios'
+import type { QueryParams } from '@/types/global.types'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-type QueryParams = {
-  page?: string
-  pageSize?: string
-}
 
 export const useOrderStore = defineStore(
   'order',

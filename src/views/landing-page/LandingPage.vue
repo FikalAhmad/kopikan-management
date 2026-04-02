@@ -52,11 +52,40 @@ const chartData = ref({
 
 const chartOption = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: 'top' as const,
+      display: false, // Cleaner look without legend when single category
     },
+    tooltip: {
+      backgroundColor: '#1e293b',
+      padding: 12,
+      cornerRadius: 8,
+      titleFont: { size: 14, weight: 'bold' },
+      bodyFont: { size: 12 },
+    }
   },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: {
+        color: '#f1f5f9',
+      },
+      ticks: {
+        color: '#64748b',
+        font: { size: 11 }
+      }
+    },
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        color: '#64748b',
+        font: { size: 11 }
+      }
+    }
+  }
 }
 
 watch(
@@ -67,10 +96,8 @@ watch(
         period: filterReport.value.period,
       })
 
-      // update data hasil request
       dataProductReport.value.getProductReport = productRes.data.data[0]
 
-      // ambil berdasarkan kategori aktif
       const category = filterReport.value.category
       const report = dataProductReport.value.getProductReport
 
@@ -103,6 +130,8 @@ watch(
             label,
             data,
             backgroundColor,
+            borderRadius: 6,
+            hoverBackgroundColor: '#36cd1d',
           },
         ],
       }
@@ -127,107 +156,152 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-6 gap-5 bg-gray-200 p-5">
-    <div class="bg-white h-32 rounded-lg flex flex-col justify-center md:col-span-2 px-10 gap-3">
-      <div class="text-sm">Total Sales</div>
-      <div class="flex justify-between items-center gap-10">
-        <div class="text-4xl font-bold">
-          {{ dataDashboardReport?.totalOrder }}
-        </div>
-        <div class="p-3 bg-gray-200 rounded-lg">
-          <CartIcon />
-        </div>
-      </div>
+  <div class="min-h-full flex flex-col gap-6 p-6 md:p-8 bg-slate-50/30">
+    <!-- Header Section -->
+    <div class="flex flex-col gap-1">
+      <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
+      <p class="text-slate-500 text-sm font-medium">Monitoring your business performance at a glance.</p>
     </div>
-    <div class="bg-white h-32 rounded-lg flex flex-col justify-center md:col-span-2 px-10 gap-3">
-      <div class="text-sm">Total Customer</div>
-      <div class="flex justify-between items-center gap-10">
-        <div class="text-4xl font-bold">
-          {{ dataDashboardReport?.totalCustomer }}
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+      <div class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-hijau/10 transition-all duration-300">
+        <div class="flex justify-between items-start">
+          <div class="space-y-3">
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Total Sales</span>
+            <div class="text-4xl font-extrabold text-slate-800 leading-none">
+              {{ dataDashboardReport?.totalOrder || 0 }}
+            </div>
+            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-hijau/10 text-hijautua text-[10px] font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-hijautua animate-pulse"></span>
+              Live Tracking
+            </div>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl group-hover:bg-hijau/20 group-hover:scale-110 transition-all duration-300">
+            <CartIcon class="w-6 h-6 text-slate-600 group-hover:text-hijautua transition-colors" />
+          </div>
         </div>
-        <div class="p-3 bg-gray-200 rounded-lg">
-          <MultipleUserIcon />
-        </div>
+        <div class="absolute -bottom-2 -left-2 w-24 h-24 bg-hijau/5 rounded-full blur-2xl"></div>
       </div>
-    </div>
-    <div class="bg-white h-32 rounded-lg flex flex-col justify-center md:col-span-2 px-10 gap-3">
-      <div class="text-sm">Total Revenue</div>
-      <div class="flex justify-between items-center gap-10">
-        <div class="text-4xl font-bold">
-          {{ dataDashboardReport?.totalRevenue }}
+
+      <div class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-blue-500/10 transition-all duration-300">
+        <div class="flex justify-between items-start">
+          <div class="space-y-3">
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Total Customer</span>
+            <div class="text-4xl font-extrabold text-slate-800 leading-none">
+              {{ dataDashboardReport?.totalCustomer || 0 }}
+            </div>
+            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+              Active Users
+            </div>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-300">
+            <MultipleUserIcon class="w-6 h-6 text-slate-600 group-hover:text-blue-600 transition-colors" />
+          </div>
         </div>
-        <div class="p-3 bg-gray-200 rounded-lg">
-          <MoneyIcon />
+        <div class="absolute -bottom-2 -left-2 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
+      </div>
+
+      <div class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+        <div class="flex justify-between items-start">
+          <div class="space-y-3">
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Total Revenue</span>
+            <div class="text-4xl font-extrabold text-slate-800 leading-none">
+              <span class="text-2xl font-bold opacity-40">Rp</span> {{ dataDashboardReport?.totalRevenue || 0 }}
+            </div>
+            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+              Earnings
+            </div>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300">
+            <MoneyIcon class="w-6 h-6 text-slate-600 group-hover:text-amber-600 transition-colors" />
+          </div>
         </div>
+        <div class="absolute -bottom-2 -left-2 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl"></div>
       </div>
     </div>
 
-    <div class="md:col-span-3 bg-white rounded-lg p-5">
-      <div class="flex flex-col gap-3">
-        <div class="flex flex-col gap-3 justify-between mb-5 items-center">
-          <div class="flex gap-2 items-center">
-            <AnalyticIcon />
-            <div class="font-bold">Total Sales Overview</div>
+    <!-- Main Content Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
+      <!-- Sales Overview Chart -->
+      <div class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden">
+        <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center gap-3 text-slate-800">
+            <div class="p-2 bg-hijau/10 rounded-lg">
+              <AnalyticIcon class="w-5 h-5 text-hijautua" />
+            </div>
+            <h2 class="font-bold text-lg">Sales Overview</h2>
           </div>
-          <div class="flex gap-3 flex-row-reverse">
-            <Select v-model:modelValue="filterReport.category" class="border-2 px-2 text-xs">
-              <SelectTrigger class="w-32">
-                <SelectValue placeholder="Signature" />
+          
+          <div class="flex gap-2">
+            <Select v-model:modelValue="filterReport.category">
+              <SelectTrigger class="h-8 w-32 text-xs border-slate-100 bg-slate-50/50 font-medium">
+                <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="signature" class="text-xs py-2 px-3 rounded-md"
-                    >Signature</SelectItem
-                  >
-                  <SelectItem value="coffee" class="text-xs py-2 px-3 rounded-md"
-                    >Coffee</SelectItem
-                  >
-                  <SelectItem value="noncoffee" class="text-xs py-2 px-3 rounded-md"
-                    >Non Coffee</SelectItem
-                  >
-                </SelectGroup>
+                <SelectItem value="signature" class="text-xs">Signature</SelectItem>
+                <SelectItem value="coffee" class="text-xs">Coffee</SelectItem>
+                <SelectItem value="noncoffee" class="text-xs">Non Coffee</SelectItem>
               </SelectContent>
             </Select>
-            <Select v-model:modelValue="filterReport.period" class="text-xs">
-              <SelectTrigger class="w-32">
-                <SelectValue placeholder="Signature" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="7d" class="text-xs py-2 px-3 rounded-md">Last Week</SelectItem>
-                  <SelectItem value="1m" class="text-xs py-2 px-3 rounded-md"
-                    >Last Month</SelectItem
-                  >
-                  <SelectItem value="1y" class="text-xs py-2 px-3 rounded-md">Last Year</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <BarChart :chartData="chartData" :chartOptions="chartOption" />
-      </div>
-    </div>
 
-    <div class="md:col-span-3 bg-white rounded-lg p-5">
-      <div>
-        <div class="flex gap-3 items-center">
-          <PackageIcon />
-          <div class="font-bold">Top Selling Product</div>
+            <Select v-model:modelValue="filterReport.period">
+              <SelectTrigger class="h-8 w-32 text-xs border-slate-100 bg-slate-50/50 font-medium">
+                <SelectValue placeholder="Period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d" class="text-xs">Last Week</SelectItem>
+                <SelectItem value="1m" class="text-xs">Last Month</SelectItem>
+                <SelectItem value="1y" class="text-xs">Last Year</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div class="max-h-[50vh] overflow-y-auto">
-          <Table class="w-full table-fixed">
-            <TableHeader class="sticky top-0 z-20 bg-white border-b-2 border-gray-300 shadow-sm">
-              <TableRow>
-                <TableHead class="py-2 pl-2 text-left">Product</TableHead>
-                <TableHead>Units Sold</TableHead>
-                <TableHead>Revenue</TableHead>
+
+        <div class="flex-1 w-full min-h-[300px]">
+          <BarChart :chartData="chartData" :chartOptions="chartOption" />
+        </div>
+      </div>
+
+      <!-- Top Selling Products Table -->
+      <div class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden">
+        <div class="flex items-center gap-3 text-slate-800 mb-8">
+          <div class="p-2 bg-blue-50 rounded-lg">
+            <PackageIcon class="w-5 h-5 text-blue-600" />
+          </div>
+          <h2 class="font-bold text-lg">Top Selling Products</h2>
+        </div>
+
+        <div class="flex-1 overflow-auto rounded-xl border border-slate-50">
+          <Table>
+            <TableHeader class="sticky top-0 bg-slate-50/80 backdrop-blur-md">
+              <TableRow class="hover:bg-transparent border-slate-100">
+                <TableHead class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Product</TableHead>
+                <TableHead class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Units Sold</TableHead>
+                <TableHead class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Revenue</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow v-for="item in totalOrderSum" :key="item.productid">
-                <TableCell class="w-52">{{ item.product_name }}</TableCell>
-                <TableCell class="w-52 text-center">{{ item.total_qty }}</TableCell>
-                <TableCell class="w-52 text-center">{{ item.total_sales }}</TableCell>
+              <TableRow v-for="item in totalOrderSum" :key="item.productid" class="group hover:bg-slate-50/50 border-slate-50 transition-colors">
+                <TableCell class="py-4 px-4">
+                  <div class="font-semibold text-slate-700 group-hover:text-hijautua transition-colors">{{ item.product_name }}</div>
+                </TableCell>
+                <TableCell class="py-4 px-4 text-center">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold leading-none">
+                    {{ item.total_qty }}
+                  </span>
+                </TableCell>
+                <TableCell class="py-4 px-4 text-right">
+                  <div class="font-bold text-slate-700">Rp {{ item.total_sales }}</div>
+                </TableCell>
+              </TableRow>
+              <!-- Empty state fallback -->
+              <TableRow v-if="!totalOrderSum?.length">
+                <TableCell colspan="3" class="p-8 text-center text-slate-400 font-medium">
+                  No data available for the selected period
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -236,3 +310,26 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Optional: Soft transitions for chart container */
+.flex-1 {
+  transition: height 0.3s ease;
+}
+
+/* Custom scrollbar for table container */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+</style>
