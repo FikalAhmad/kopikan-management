@@ -41,3 +41,8 @@ export type TotalOrderSummaryProps = {
   total_sales: number
   total_orders: number
 }
+
+export type QueryParams = {
+  page?: string
+  pageSize?: string
+}
