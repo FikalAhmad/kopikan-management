@@ -32,8 +32,8 @@
           <img src="/images/barista.jpg" alt="Avatar" class="w-32 h-32 object-cover" />
         </div>
         <div class="flex flex-col items-center gap-1">
-          <div class="font-bold text-2xl text-gray-800">{{ authStore.user?.name || 'Admin User' }}</div>
-          <div class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{{}}</div>
+          <div class="font-bold text-2xl text-gray-800">{{ authStore.user?.name  }}</div>
+          <div class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{{authStore.user?.role_name}}</div>
         </div>
       </div>
       <div class="w-full pb-8">
@@ -51,7 +51,6 @@ const emit = defineEmits(['close-sidebar'])
 defineProps<{ visible: boolean }>()
 
 const authStore = useAuthStore()
-console.log(authStore.user)
 
 const handleLogout = () => {
   authStore.logout()

@@ -23,7 +23,7 @@ const isProfileSidebar = () => {
     <Button
       @click="isProfileSidebar"
       variant="ghost"
-      class="cursor-pointer rounded-full hover:scale-105 w-12 h-12 transition-all duration-200s border-4 border-black/50"
+      class="cursor-pointer rounded-full hover:scale-105 w-12 h-12 transition-all duration-200s border-4 border-black/25"
       size="icon"
     >
       <img src="/images/barista.jpg" alt="Avatar" class="rounded-full shadow-lg" />

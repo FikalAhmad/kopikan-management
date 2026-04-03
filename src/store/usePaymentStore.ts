@@ -9,7 +9,7 @@ export const usePaymentStore = defineStore(
     const payments = ref<
       {
         id: string
-        orderid: string
+        order_id: string
         payment_date: string
         amount: number
         status: string

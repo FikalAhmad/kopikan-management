@@ -8,8 +8,6 @@ export interface User {
   name: string
   email: string
   role_id: string
-  role: {
-    role_name: string
-  }
+  role_name: string
   exp: number
 }

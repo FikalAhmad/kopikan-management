@@ -14,7 +14,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -50,6 +49,7 @@ onMounted(() => {
             <CardTitle class="text-2xl font-bold">User Management</CardTitle>
             <CardDescription class="mt-1">Manage user access and track member engagement across the editorial platform.</CardDescription>
           </div>
+          <Button class="bg-primary text-white hover:bg-primary/90" >Add User</Button>
           <!-- Add potential actions here like 'Create Order' -->
         </div>
       </CardHeader>

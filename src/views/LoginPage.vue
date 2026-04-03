@@ -19,7 +19,7 @@ const formLogin = useForm({
 })
 
 const authStore = useAuthStore()
-
+console.log(authStore.user)
 const onSubmit = formLogin.handleSubmit((values) => {
   authStore.login(values.email, values.password)
 })
