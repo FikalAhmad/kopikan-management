@@ -19,19 +19,56 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { DeleteIcon, EditIcon } from '@/lib/icons'
 import { useDiscountStore } from '@/store/useDiscountStore'
-import { onMounted } from 'vue'
+import { ref, watch } from 'vue'
 
 const discountStore = useDiscountStore()
+const rowPerPage = ref<number>(10)
+const currentPage = ref<number>(1)
 
 const handleDelete = (id: string) => {
   discountStore.deleteDiscount(id)
 }
-console.log(discountStore.discounts)
-onMounted(() => {
-  discountStore.fetchDiscounts()
-})
+
+const goToNextPage = () => {
+  const maxPage = Math.ceil((discountStore.discounts?.pagination.total ?? 0) / rowPerPage.value)
+
+  if (currentPage.value < maxPage) {
+    currentPage.value++
+  }
+}
+
+watch(
+  () => [currentPage.value, rowPerPage.value],
+  async () => {
+    try {
+      discountStore.fetchDiscounts({
+        page: currentPage.value.toString(),
+        pageSize: rowPerPage.value.toString(),
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -41,7 +78,9 @@ onMounted(() => {
         <div class="flex justify-between items-start">
           <div>
             <CardTitle class="text-2xl font-bold">Discount Management</CardTitle>
-            <CardDescription class="mt-1">Manage and view your discounts in one place.</CardDescription>
+            <CardDescription class="mt-1"
+              >Manage and view your discounts in one place.</CardDescription
+            >
           </div>
           <!-- Add potential actions here like 'Create Order' -->
         </div>
@@ -51,25 +90,64 @@ onMounted(() => {
           <Table class="w-full">
             <TableHeader class="sticky top-0 bg-background/95 backdrop-blur-sm border-b">
               <TableRow class="hover:bg-transparent border-none">
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Discount Code</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Description</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Type</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Value</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Min Purchase</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Max Discount</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Valid Days</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Time Start</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Time End</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Start Date</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">End Date</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Status</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap text-center">Action</TableHead>
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Discount Code</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Description</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Type</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Value</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Min Purchase</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Max Discount</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Valid Days</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Time Start</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Time End</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Start Date</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >End Date</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  >Status</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap text-center"
+                  >Action</TableHead
+                >
               </TableRow>
             </TableHeader>
 
             <TableBody>
               <TableRow
-                v-for="item in discountStore.discounts"
+                v-for="item in discountStore.discounts?.data"
                 :key="item.id"
                 class="group border-b border-border/50 hover:bg-muted/30 transition-colors"
               >
@@ -83,44 +161,55 @@ onMounted(() => {
                   {{ item.type }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ item.value }}
+                  {{ item.value }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ item.min_purchase ?? '-'  }}
+                  {{ item.min_purchase ?? '-' }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ item.max_discount ?? '-' }}
+                  {{ item.max_discount ?? '-' }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     <Badge v-for="vd in item.valid_days" :key="vd">
+                  <Badge v-for="vd in item.valid_days" :key="vd">
                     {{ vd }}
                   </Badge>
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ item.time_start ?? '-' }}
+                  {{ item.time_start ?? '-' }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ item.time_end ?? '-' }}
+                  {{ item.time_end ?? '-' }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ new Date(item.start_date).toISOString().split('T')[0] }}
+                  {{ new Date(item.start_date).toISOString().split('T')[0] }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ new Date(item.end_date).toISOString().split('T')[0] }}
+                  {{ new Date(item.end_date).toISOString().split('T')[0] }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-muted-foreground">
-                     {{ item.is_active }}
+                  {{ item.is_active }}
                 </TableCell>
                 <TableCell class="px-6 py-4 text-right">
-                  <div class="flex gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div
+                    class="flex gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     <RouterLink :to="`/product/edit/${item.id}`" title="Edit Order">
-                      <Button size="icon" variant="ghost" class="h-8 w-8 hover:bg-primary/10 hover:text-primary">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        class="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                      >
                         <EditIcon class="w-4 h-4" />
                       </Button>
                     </RouterLink>
                     <Dialog>
                       <DialogTrigger as-child>
-                        <Button size="icon" variant="ghost" title="Delete Order" class="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          title="Delete Order"
+                          class="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                        >
                           <DeleteIcon class="w-4 h-4" />
                         </Button>
                       </DialogTrigger>
@@ -128,16 +217,21 @@ onMounted(() => {
                         <DialogHeader>
                           <DialogTitle>Delete Order</DialogTitle>
                           <DialogDescription class="mt-4">
-                            Are you sure you want to delete this order? This action cannot be undone.
+                            Are you sure you want to delete this order? This action cannot be
+                            undone.
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter class="flex gap-2 mt-6">
-                           <DialogClose as-child>
-                              <Button variant="outline" class="flex-1">Cancel</Button>
-                            </DialogClose>
-                            <Button variant="destructive" @click="handleDelete(item.id)" class="flex-1">
-                              Delete Order
-                            </Button>
+                          <DialogClose as-child>
+                            <Button variant="outline" class="flex-1">Cancel</Button>
+                          </DialogClose>
+                          <Button
+                            variant="destructive"
+                            @click="handleDelete(item.id)"
+                            class="flex-1"
+                          >
+                            Delete Order
+                          </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
@@ -149,7 +243,9 @@ onMounted(() => {
         </div>
 
         <!-- Sticky Footer for Pagination and Rows Per Page -->
-        <!-- <div class="flex-none p-4 px-6 border-t flex flex-wrap items-center justify-between gap-4 bg-muted/10">
+        <div
+          class="flex-none p-4 px-6 border-t flex flex-wrap items-center justify-between gap-4 bg-muted/10"
+        >
           <div class="flex items-center gap-3">
             <span class="text-sm text-muted-foreground whitespace-nowrap"> Rows per page </span>
             <Select v-model="rowPerPage">
@@ -167,10 +263,10 @@ onMounted(() => {
           </div>
 
           <Pagination
-            v-if="productStore.products?.pagination.total ?? 0 > 0"
+            v-if="discountStore.discounts?.pagination.total ?? 0 > 0"
             v-slot="{ page }"
-            :items-per-page="productStore.products?.pagination.pageSize || 10"
-            :total="productStore.products?.pagination.total"
+            :items-per-page="discountStore.discounts?.pagination.pageSize || 10"
+            :total="discountStore.discounts?.pagination.total"
             :default-page="currentPage"
           >
             <PaginationContent v-slot="{ items }">
@@ -186,13 +282,17 @@ onMounted(() => {
                 >
                   {{ item.value }}
                 </PaginationItem>
-                <PaginationEllipsis v-else-if="item.type === 'ellipsis'" :key="item.type" :index="index" />
+                <PaginationEllipsis
+                  v-else-if="item.type === 'ellipsis'"
+                  :key="item.type"
+                  :index="index"
+                />
               </template>
 
               <PaginationNext class="h-8" @click="goToNextPage" />
             </PaginationContent>
           </Pagination>
-        </div> -->
+        </div>
       </CardContent>
     </Card>
   </div>

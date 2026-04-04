@@ -18,16 +18,35 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useUserStore } from '@/store/useUserStore'
-import { onMounted, ref } from 'vue'
+import { ref, watch } from 'vue'
 import { DeleteIcon, EditIcon } from '@/lib/icons'
 
 const userStore = useUserStore()
 const isModal = ref<boolean>(false)
+const rowPerPage = ref<number>(10)
+const currentPage = ref<number>(1)
 
 const handleDelete = (id: string) => {
   userStore.deleteUser(id)
   isModal.value = !isModal.value
+}
+
+const goToNextPage = () => {
+  const maxPage = Math.ceil((userStore.users?.pagination.total ?? 0) / rowPerPage.value)
+
+  if (currentPage.value < maxPage) {
+    currentPage.value++
+  }
 }
 
 const roleGroup: Record<string, string> = {
@@ -35,9 +54,20 @@ const roleGroup: Record<string, string> = {
   '6800a52eea8560606cbc4a25': 'bg-blue-400',
 }
 
-onMounted(() => {
-  userStore.fetchUsers()
-})
+watch(
+  () => [currentPage.value, rowPerPage.value],
+  async () => {
+    try {
+      userStore.fetchUsers({
+        page: currentPage.value.toString(),
+        pageSize: rowPerPage.value.toString(),
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -67,7 +97,7 @@ onMounted(() => {
 
             <TableBody>
               <TableRow
-                v-for="(item, index) in userStore.users"
+                v-for="(item, index) in userStore.users?.data"
                 :key="item.id"
                 class="group border-b border-border/50 hover:bg-muted/30 transition-colors"
                 >
@@ -125,7 +155,7 @@ onMounted(() => {
         </div>
 
         <!-- Sticky Footer for Pagination and Rows Per Page -->
-        <!-- <div class="flex-none p-4 px-6 border-t flex flex-wrap items-center justify-between gap-4 bg-muted/10">
+        <div class="flex-none p-4 px-6 border-t flex flex-wrap items-center justify-between gap-4 bg-muted/10">
           <div class="flex items-center gap-3">
             <span class="text-sm text-muted-foreground whitespace-nowrap"> Rows per page </span>
             <Select v-model="rowPerPage">
@@ -137,17 +167,16 @@ onMounted(() => {
                   <SelectItem value="10">10</SelectItem>
                   <SelectItem value="20">20</SelectItem>
                   <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
 
           <Pagination
-            v-if="orderStore.orders?.pagination.total ?? 0 > 0"
+            v-if="userStore.users?.pagination.total ?? 0 > 0"
             v-slot="{ page }"
-            :items-per-page="orderStore.orders?.pagination.pageSize || 10"
-            :total="orderStore.orders?.pagination.total"
+            :items-per-page="userStore.users?.pagination.pageSize || 10"
+            :total="userStore.users?.pagination.total"
             :default-page="currentPage"
           >
             <PaginationContent v-slot="{ items }">
@@ -169,7 +198,7 @@ onMounted(() => {
               <PaginationNext class="h-8" @click="goToNextPage" />
             </PaginationContent>
           </Pagination>
-        </div> -->
+        </div>
       </CardContent>
     </Card>
   </div>

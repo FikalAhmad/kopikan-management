@@ -1,13 +1,14 @@
 import { axiosJWT } from '@/lib/axios'
-import axios from 'axios'
+import type { QueryParams } from '@/types/global.types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const usePaymentStore = defineStore(
   'payment',
   () => {
-    const payments = ref<
-      {
+    const payments = ref<{
+      success: boolean
+      data: {
         id: string
         order_id: string
         payment_date: string
@@ -15,13 +16,19 @@ export const usePaymentStore = defineStore(
         status: string
         payment_method: string
       }[]
-    >()
+      pagination: {
+        total: number
+        page: number
+        pageSize: number
+        totalPages: number
+      }
+    }>()
 
-    const fetchPayments = async () => {
+    const fetchPayments = async ({ page = '1', pageSize = '10' }: QueryParams = {}) => {
       try {
-        const response = await axiosJWT.get('/api/payments')
+        const response = await axiosJWT.get(`/api/payments?page=${page}&pageSize=${pageSize}`)
         if (response.data) {
-          payments.value = response.data.data
+          payments.value = response.data
         }
       } catch (error) {
         console.error('Error fetching payments:', error)
@@ -34,7 +41,7 @@ export const usePaymentStore = defineStore(
       password: string
     }) => {
       try {
-        const response = await axios.post(`${import.meta.env.API}/api/payments`, paymentData, {
+        const response = await axiosJWT.post(`/api/payments`, paymentData, {
           headers: {
             'Content-Type': 'application/json',
           },

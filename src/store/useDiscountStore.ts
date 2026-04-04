@@ -6,13 +6,22 @@ import { ref } from 'vue'
 export const useDiscountStore = defineStore(
   'discount',
   () => {
-    const discounts = ref<DiscountProps[]>()
+    const discounts = ref<{
+      success: boolean
+      data: DiscountProps[]
+      pagination: {
+        total: number
+        page: number
+        pageSize: number
+        totalPages: number
+      }
+    }>()
 
-    const fetchDiscounts = async () => {
+    const fetchDiscounts = async ({ page = '1', pageSize = '10' }: QueryParams = {}) => {
       try {
-        const response = await axiosJWT.get('/api/discounts')
+        const response = await axiosJWT.get(`/api/discounts?page=${page}&pageSize=${pageSize}`)
         if (response.data) {
-          discounts.value = response.data.data
+          discounts.value = response.data
         }
       } catch (error) {
         console.error('Error fetching users:', error)

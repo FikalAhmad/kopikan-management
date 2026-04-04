@@ -1,4 +1,5 @@
 import { axiosJWT } from '@/lib/axios'
+import type { QueryParams } from '@/types/global.types'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -8,20 +9,30 @@ export const useUserStore = defineStore(
   () => {
     const users = ref<
       {
-        id: string
-        name: string
-        email: string
-        phone: string
-        role_id: string
-        role: { role_name: string }
-      }[]
+        success: boolean
+        data: {
+
+          id: string
+          name: string
+          email: string
+          phone: string
+          role_id: string
+          role: { role_name: string }
+        }[]
+        pagination: {
+          total: number
+          page: number
+          pageSize: number
+          totalPages: number
+        }
+      }
     >()
 
-    const fetchUsers = async () => {
+    const fetchUsers = async ({ page = '1', pageSize = '10' }: QueryParams = {}) => {
       try {
-        const response = await axiosJWT.get('/api/users')
+        const response = await axiosJWT.get(`/api/users?page=${page}&pageSize=${pageSize}`)
         if (response.data) {
-          users.value = response.data.data
+          users.value = response.data
         }
       } catch (error) {
         console.error('Error fetching users:', error)
