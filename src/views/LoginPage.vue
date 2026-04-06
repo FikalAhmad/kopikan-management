@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Coffee, Mail, Lock, LogIn, Loader2 } from 'lucide-vue-next'
 
 const isLoading = ref(false)
+const errorMessage = ref('')
 
 const formLoginSchema = toTypedSchema(
   z.object({
@@ -26,8 +27,17 @@ const authStore = useAuthStore()
 
 const onSubmit = formLogin.handleSubmit(async (values) => {
   isLoading.value = true
+  errorMessage.value = ''
   try {
     await authStore.login(values.email, values.password)
+  } catch (error: any) {
+    if (error.response?.data?.msg) {
+      errorMessage.value = error.response.data.msg
+    } else if (error.message) {
+      errorMessage.value = error.message
+    } else {
+      errorMessage.value = 'Email atau password salah'
+    }
   } finally {
     isLoading.value = false
   }
@@ -77,6 +87,12 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
           >
         </CardHeader> -->
         <CardContent>
+          <div
+            v-if="errorMessage"
+            class="mb-4 rounded-xl bg-rose-500/10 border border-rose-500/20 p-4 text-sm font-medium text-rose-500 animate-in fade-in slide-in-from-top-1"
+          >
+            {{ errorMessage }}
+          </div>
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <FormField v-slot="{ componentField }" name="email">
               <FormItem class="group/field space-y-2">
@@ -95,7 +111,7 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
                       v-bind="componentField"
                       type="email"
                       placeholder="admin@kopikan.com"
-                      class="border-white/10 pl-11 h-12 text-zinc-100 placeholder:text-zinc-600 focus:border-hijau/50 focus:ring-hijau/20 transition-all rounded-xl border-2"
+                      class="border-white/10 pl-11 h-12 placeholder:text-zinc-600 focus:border-hijau/50 focus:ring-hijau/20 transition-all rounded-xl border-2"
                     />
                   </FormControl>
                 </div>
@@ -129,7 +145,7 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
                       v-bind="componentField"
                       type="password"
                       placeholder="••••••••"
-                      class="border-white/10 pl-11 h-12 text-zinc-100 placeholder:text-zinc-600 focus:border-hijau/50 focus:ring-hijau/20 transition-all rounded-xl border-2"
+                      class="border-white/10 pl-11 h-12 placeholder:text-zinc-600 focus:border-hijau/50 focus:ring-hijau/20 transition-all rounded-xl border-2"
                     />
                   </FormControl>
                 </div>

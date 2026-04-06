@@ -29,12 +29,18 @@ export const useAuthStore = defineStore(
 
         if (response.data) {
           const decoded = jwtDecode<User>(response.data.accessToken)
+
+          if (decoded.role_name !== 'Admin' && decoded.role_id !== '67e3011960094b86083ac359') {
+            throw new Error('Akses ditolak. Hanya Admin yang diperbolehkan masuk.')
+          }
+
           token.value = response.data.accessToken
           user.value = decoded
           window.location.href = '/dashboard'
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Login failed:', error)
+        throw error
       }
     }
 
@@ -54,6 +60,11 @@ export const useAuthStore = defineStore(
           withCredentials: true,
         })
         const decoded = jwtDecode<User>(response.data.accessToken)
+
+        if (decoded.role_name !== 'Admin' && decoded.role_id !== '67e3011960094b86083ac359') {
+          logout()
+          return null
+        }
 
         token.value = response.data.accessToken
         user.value = decoded
