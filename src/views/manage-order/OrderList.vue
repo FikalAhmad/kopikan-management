@@ -5,7 +5,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -19,8 +18,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTrigger,
+  DialogTitle,
 } from '@/components/ui/dialog'
-import { DeleteIcon, EditIcon } from '@/lib/icons'
 import {
   Pagination,
   PaginationContent,
@@ -38,20 +37,36 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import {
+  Plus,
+  Search,
+  Filter,
+  Trash2,
+  Eye,
+  MoreVertical,
+  ShoppingCart,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  MapPin,
+  Calendar,
+  CreditCard,
+} from 'lucide-vue-next'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
-const isModal = ref<boolean>(false)
-const rowPerPage = ref<number>(10)
+const rowPerPage = ref<string>('10')
 const currentPage = ref<number>(1)
 const orderStore = useOrderStore()
+const searchQuery = ref('')
 
-const handleDelete = (id: string) => {
-  orderStore.deleteOrder(id)
-  isModal.value = !isModal.value
+const handleDelete = async (id: string) => {
+  await orderStore.deleteOrder(id)
 }
 
 const goToNextPage = () => {
-  const maxPage = Math.ceil(orderStore.orders?.pagination.total ?? 0 / rowPerPage.value)
-
+  const maxPage = Math.ceil((orderStore.orders?.pagination.total ?? 0) / Number(rowPerPage.value))
   if (currentPage.value < maxPage) {
     currentPage.value++
   }
@@ -61,9 +76,9 @@ watch(
   () => [currentPage.value, rowPerPage.value],
   async () => {
     try {
-      orderStore.fetchOrders({
+      await orderStore.fetchOrders({
         page: currentPage.value.toString(),
-        pageSize: rowPerPage.value.toString(),
+        pageSize: rowPerPage.value,
       })
     } catch (error) {
       console.error(error)
@@ -71,152 +86,332 @@ watch(
   },
   { immediate: true },
 )
+
+const getStatusColor = (status: string) => {
+  switch (status.toUpperCase()) {
+    case 'COMPLETED':
+      return 'bg-hijau/10 text-hijau border-hijau/20'
+    case 'PENDING':
+      return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+    case 'CANCELLED':
+      return 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+    default:
+      return 'bg-slate-100 text-slate-500 border-slate-200'
+  }
+}
+
+const getStatusIcon = (status: string) => {
+  switch (status.toUpperCase()) {
+    case 'COMPLETED':
+      return CheckCircle2
+    case 'PENDING':
+      return Clock
+    case 'CANCELLED':
+      return AlertCircle
+    default:
+      return MoreVertical
+  }
+}
 </script>
 
 <template>
-  <div class="h-full flex flex-col overflow-hidden">
-    <Card class="flex-1 flex flex-col overflow-hidden border-none shadow-sm">
-      <CardHeader class="flex-none px-6 py-6 border-b">
-        <div class="flex justify-between items-start">
-          <div>
-            <CardTitle class="text-2xl font-bold">Order Management</CardTitle>
-            <CardDescription class="mt-1">Manage and view your orders in one place.</CardDescription>
+  <div class="p-6 space-y-6 flex flex-col h-full overflow-hidden">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <ShoppingCart class="h-8 w-8 text-hijau" />
+          Order History
+        </h1>
+        <p class="text-slate-500 mt-1">Monitor and manage every transaction in real-time.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <Button
+          variant="outline"
+          class="hidden md:flex gap-2 rounded-xl border-slate-200 bg-white/50"
+        >
+          <Filter class="h-4 w-4" />
+          Filter
+        </Button>
+        <Button
+          class="bg-hijau hover:bg-hijautua text-white rounded-xl shadow-lg shadow-hijau/20 gap-2 px-5"
+        >
+          <Plus class="h-4 w-4" />
+          New Transaction
+        </Button>
+      </div>
+    </div>
+
+    <!-- Stats Row (Optional Premium Touch) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card
+        class="bg-white/50 backdrop-blur-sm border-slate-200 shadow-sm transition-all hover:shadow-md"
+      >
+        <CardContent class="p-5 flex items-center gap-4">
+          <div class="h-12 w-12 rounded-2xl bg-hijau/10 flex items-center justify-center">
+            <ShoppingCart class="h-6 w-6 text-hijau" />
           </div>
-          <!-- Add potential actions here like 'Create Order' -->
+          <div>
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">
+              Total Orders
+            </p>
+            <h3 class="text-xl font-bold">{{ orderStore.orders?.pagination.total || 0 }}</h3>
+          </div>
+        </CardContent>
+      </Card>
+      <Card class="bg-white/50 backdrop-blur-sm border-slate-200 shadow-sm">
+        <CardContent class="p-5 flex items-center gap-4">
+          <div class="h-12 w-12 rounded-2xl bg-hijau/10 flex items-center justify-center">
+            <CreditCard class="h-6 w-6 text-hijau" />
+          </div>
+          <div>
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">
+              Revenue
+            </p>
+            <h3 class="text-xl font-bold">Rp --</h3>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Table Section -->
+    <Card
+      class="flex-1 flex flex-col overflow-hidden shadow-xl border-slate-200 bg-white/50 backdrop-blur-sm"
+    >
+      <CardHeader class="px-6 py-4 border-b border-slate-100">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="relative w-full sm:w-96 group">
+            <Search
+              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-hijau transition-colors"
+            />
+            <Input
+              v-model="searchQuery"
+              placeholder="Search by Customer ID or Address..."
+              class="pl-10 h-10 bg-white/50 border-slate-200 group-hover:border-hijau/20 transition-all rounded-xl shadow-none focus-visible:ring-hijau/20"
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-slate-500">Show</span>
+            <Select v-model="rowPerPage">
+              <SelectTrigger class="h-10 w-20 bg-white/50 border-slate-200 rounded-xl">
+                <SelectValue placeholder="10" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </CardHeader>
-      <CardContent class="flex-1 flex flex-col overflow-hidden p-0">
-        <div class="flex-1 overflow-auto relative">
-          <Table class="w-full">
-            <TableHeader class="sticky top-0 bg-background/95 backdrop-blur-sm border-b">
-              <TableRow class="hover:bg-transparent border-none">
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Customer ID</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Order Date</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Order Source</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Delivery Address</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">Total</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap text-center">Status</TableHead>
-                <TableHead class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground text-right">Action</TableHead>
+
+      <CardContent class="p-0 flex-1 overflow-hidden relative">
+        <div class="h-full overflow-auto scrollbar-thin">
+          <Table>
+            <TableHeader class="header-premium sticky top-0 z-10 bg-white backdrop-blur-md">
+              <TableRow class="hover:bg-transparent border-b">
+                <TableHead
+                  class="pl-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
+                  >Order Info</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
+                  >Source</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
+                  >Address</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
+                  >Amount</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500 text-center"
+                  >Status</TableHead
+                >
+                <TableHead
+                  class="pr-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500 text-right"
+                  >Actions</TableHead
+                >
               </TableRow>
             </TableHeader>
 
             <TableBody>
               <TableRow
-                v-for="item in orderStore.orders?.data"
-                :key="item.id"
-                class="group border-b border-border/50 hover:bg-muted/30 transition-colors"
+                v-for="order in orderStore.orders?.data"
+                :key="order.id"
+                class="group border-b border-slate-100/50 hover:bg-slate-50/50 transition-all duration-200"
               >
-                <TableCell class="px-6 py-4 text-foreground font-medium">
-                  {{ item.id }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.order_date }}
-                </TableCell>
-                <TableCell class="px-6 py-4">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground uppercase">
-                    {{ item.order_source }}
-                  </span>
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground max-w-[250px]">
-                  <div class="truncate" :title="item.delivery_address || 'N/A'">
-                     {{ item.delivery_address || 'N/A' }}
+                <TableCell class="pl-6 py-4">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-bold text-foreground truncate max-w-[120px]"
+                      >#{{ order.id.slice(-8) }}</span
+                    >
+                    <div class="flex items-center gap-1.5 text-xs text-slate-400">
+                      <Calendar class="h-3 w-3" />
+                      {{ order.order_date }}
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell class="px-6 py-4 font-semibold text-primary">
-                  {{ item.total }}
+
+                <TableCell class="px-6 py-4">
+                  <Badge
+                    variant="outline"
+                    class="bg-hijau/5 text-hijau border-hijau/20 rounded-full font-bold px-3"
+                  >
+                    {{ order.order_source }}
+                  </Badge>
                 </TableCell>
+
+                <TableCell class="px-6 py-4">
+                  <div class="flex items-center gap-2 max-w-[200px] text-slate-500">
+                    <MapPin class="h-3.5 w-3.5 shrink-0 text-hijau/60" />
+                    <span class="truncate text-xs tracking-tight" :title="order.delivery_address">
+                      {{ order.delivery_address || 'Take-away (No Address)' }}
+                    </span>
+                  </div>
+                </TableCell>
+
+                <TableCell class="px-6 py-4">
+                  <span class="font-black text-foreground"
+                    >Rp {{ order.total.toLocaleString() }}</span
+                  >
+                </TableCell>
+
                 <TableCell class="px-6 py-4 text-center">
-                  <span :class="[
-                    'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase',
-                    item.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
-                  ]">
-                    {{ item.status }}
-                  </span>
+                  <Badge
+                    :class="cn('rounded-full font-bold px-3 gap-1.5', getStatusColor(order.status))"
+                  >
+                    <component :is="getStatusIcon(order.status)" class="h-3 w-3" />
+                    {{ order.status }}
+                  </Badge>
                 </TableCell>
-                <TableCell class="px-6 py-4 text-right">
-                  <div class="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                    <RouterLink :to="`/product/edit/${item.id}`" title="Edit Order">
-                      <Button size="icon" variant="ghost" class="h-8 w-8 hover:bg-primary/10 hover:text-primary">
-                        <EditIcon class="w-4 h-4" />
-                      </Button>
-                    </RouterLink>
+
+                <TableCell class="pr-6 py-4 text-right">
+                  <div
+                    class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0"
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      class="h-9 w-9 rounded-full hover:bg-hijau/10 hover:text-hijau transition-colors"
+                    >
+                      <Eye class="h-4 w-4" />
+                    </Button>
+
                     <Dialog>
                       <DialogTrigger as-child>
-                        <Button size="icon" variant="ghost" title="Delete Order" class="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                          <DeleteIcon class="w-4 h-4" />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          class="h-9 w-9 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                        >
+                          <Trash2 class="h-4 w-4" />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent class="sm:max-w-[425px]">
+                      <DialogContent class="border-none shadow-2xl rounded-3xl">
                         <DialogHeader>
-                          <DialogTitle>Delete Order</DialogTitle>
-                          <DialogDescription class="mt-4">
-                            Are you sure you want to delete this order? This action cannot be undone.
+                          <DialogTitle class="text-2xl font-bold flex items-center gap-2">
+                            <AlertCircle class="h-6 w-6 text-destructive" />
+                            Delete Order
+                          </DialogTitle>
+                          <DialogDescription class="pt-4 text-base">
+                            Are you sure you want to remove order
+                            <span class="font-black">#{{ order.id.slice(-8) }}</span
+                            >? This action cannot be undone and will void the transaction record.
                           </DialogDescription>
                         </DialogHeader>
-                        <DialogFooter class="flex gap-2 mt-6">
-                           <DialogClose as-child>
-                              <Button variant="outline" class="flex-1">Cancel</Button>
-                            </DialogClose>
-                            <Button variant="destructive" @click="handleDelete(item.id)" class="flex-1">
-                              Delete Order
-                            </Button>
+                        <DialogFooter class="gap-3 sm:gap-0 mt-6">
+                          <DialogClose as-child>
+                            <Button variant="ghost" class="rounded-xl flex-1 h-12">Cancel</Button>
+                          </DialogClose>
+                          <Button
+                            class="bg-destructive hover:bg-destructive/90 text-white rounded-xl flex-1 h-12 font-bold"
+                            @click="handleDelete(order.id)"
+                          >
+                            Confirm Delete
+                          </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
                   </div>
                 </TableCell>
               </TableRow>
+
+              <!-- Empty State -->
+              <TableRow v-if="!orderStore.orders?.data.length">
+                <TableCell colspan="6" class="h-[400px] text-center">
+                  <div class="flex flex-col items-center justify-center gap-4">
+                    <div
+                      class="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center"
+                    >
+                      <ShoppingCart class="h-10 w-10 text-slate-300" />
+                    </div>
+                    <div class="space-y-1">
+                      <h3 class="text-xl font-bold">No orders found</h3>
+                      <p class="text-slate-500 text-sm">
+                        Create a new order to see them appearing here.
+                      </p>
+                    </div>
+                    <Button class="bg-hijau hover:bg-hijautua mt-2 px-8 rounded-xl shadow-lg"
+                      >New Order</Button
+                    >
+                  </div>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>
+      </CardContent>
 
-        <!-- Sticky Footer for Pagination and Rows Per Page -->
-        <div class="flex-none p-4 px-6 border-t flex flex-wrap items-center justify-between gap-4 bg-muted/10">
-          <div class="flex items-center gap-3">
-            <span class="text-sm text-muted-foreground whitespace-nowrap"> Rows per page </span>
-            <Select v-model="rowPerPage">
-              <SelectTrigger class="h-8 w-[70px] bg-background">
-                <SelectValue :placeholder="String(rowPerPage)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+      <!-- Footer with Pagination -->
+      <div
+        class="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/10"
+      >
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          Showing {{ orderStore.orders?.data.length }} of
+          {{ orderStore.orders?.pagination.total }} results
+        </p>
 
-          <Pagination
-            v-if="orderStore.orders?.pagination.total ?? 0 > 0"
-            v-slot="{ page }"
-            :items-per-page="orderStore.orders?.pagination.pageSize || 10"
-            :total="orderStore.orders?.pagination.total"
-            :default-page="currentPage"
-          >
-            <PaginationContent v-slot="{ items }">
-              <PaginationPrevious class="h-8" @click="currentPage > 1 && currentPage--" />
-
-              <template v-for="(item, index) in items" :key="index">
-                <PaginationItem
-                  v-if="item.type === 'page'"
-                  :value="item.value"
-                  :is-active="item.value === page"
-                  class="h-8 w-8 p-0"
-                  @click="currentPage = item.value"
+        <Pagination
+          v-if="orderStore.orders?.pagination.total"
+          :items-per-page="Number(rowPerPage)"
+          :total="orderStore.orders?.pagination.total"
+          :default-page="currentPage"
+          @update:page="(v) => (currentPage = v)"
+        >
+          <PaginationContent v-slot="{ items }">
+            <PaginationPrevious class="rounded-xl h-9 hover:bg-hijau/10 border-none" />
+            <template v-for="(item, index) in items">
+              <PaginationItem v-if="item.type === 'page'" :key="index" :value="item.value">
+                <Button
+                  class="w-9 h-9 p-0 rounded-xl transition-all"
+                  :variant="item.value === currentPage ? 'default' : 'outline'"
+                  :class="item.value === currentPage ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20' : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'"
                 >
                   {{ item.value }}
-                </PaginationItem>
-                <PaginationEllipsis v-else-if="item.type === 'ellipsis'" :key="item.type" :index="index" />
-              </template>
-
-              <PaginationNext class="h-8" @click="goToNextPage" />
-            </PaginationContent>
-          </Pagination>
-        </div>
-      </CardContent>
+                </Button>
+              </PaginationItem>
+              <PaginationEllipsis v-else :key="item.type" :index="index" />
+            </template>
+            <PaginationNext class="rounded-xl h-9 hover:bg-hijau/10 border-none" />
+          </PaginationContent>
+        </Pagination>
+      </div>
     </Card>
   </div>
-
 </template>
+
+<style scoped>
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply rounded-full;
+}
+.header-premium {
+  @apply shadow-[0_1px_0_0_rgba(0,0,0,0.05)];
+}
+</style>

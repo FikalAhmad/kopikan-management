@@ -10,6 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTrigger,
+  DialogTitle,
 } from '@/components/ui/dialog'
 import {
   Table,
@@ -35,21 +36,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { DeleteIcon, EditIcon } from '@/lib/icons'
+import {
+  Plus,
+  Search,
+  Filter,
+  Trash2,
+  Edit3,
+  Ticket,
+  Percent,
+  Calendar,
+  Zap,
+  Tag,
+  AlertCircle,
+  MoreVertical,
+  CheckCircle2,
+  Clock,
+  ChevronRight,
+} from 'lucide-vue-next'
+import { Input } from '@/components/ui/input'
 import { useDiscountStore } from '@/store/useDiscountStore'
 import { ref, watch } from 'vue'
+import { cn } from '@/lib/utils'
 
 const discountStore = useDiscountStore()
-const rowPerPage = ref<number>(10)
+const rowPerPage = ref<string>('10')
 const currentPage = ref<number>(1)
+const searchQuery = ref('')
 
-const handleDelete = (id: string) => {
-  discountStore.deleteDiscount(id)
+const handleDelete = async (id: string) => {
+  await discountStore.deleteDiscount(id)
 }
 
 const goToNextPage = () => {
-  const maxPage = Math.ceil((discountStore.discounts?.pagination.total ?? 0) / rowPerPage.value)
-
+  const maxPage = Math.ceil(
+    (discountStore.discounts?.pagination.total ?? 0) / Number(rowPerPage.value),
+  )
   if (currentPage.value < maxPage) {
     currentPage.value++
   }
@@ -59,9 +80,9 @@ watch(
   () => [currentPage.value, rowPerPage.value],
   async () => {
     try {
-      discountStore.fetchDiscounts({
+      await discountStore.fetchDiscounts({
         page: currentPage.value.toString(),
-        pageSize: rowPerPage.value.toString(),
+        pageSize: rowPerPage.value,
       })
     } catch (error) {
       console.error(error)
@@ -69,78 +90,135 @@ watch(
   },
   { immediate: true },
 )
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })
+}
 </script>
 
 <template>
-  <div class="h-full flex flex-col overflow-hidden">
-    <Card class="flex-1 flex flex-col overflow-hidden border-none shadow-sm">
-      <CardHeader class="flex-none px-6 py-6 border-b">
-        <div class="flex justify-between items-start">
-          <div>
-            <CardTitle class="text-2xl font-bold">Discount Management</CardTitle>
-            <CardDescription class="mt-1"
-              >Manage and view your discounts in one place.</CardDescription
-            >
+  <div class="p-6 space-y-6 flex flex-col h-full overflow-hidden">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <Ticket class="h-8 w-8 text-hijau" />
+          Campaigns & Offers
+        </h1>
+        <p class="text-muted-foreground mt-1">Monitor your active promos and seasonal discounts.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <Button
+          variant="outline"
+          class="hidden md:flex gap-2 rounded-xl border-muted-foreground/20 backdrop-blur-sm"
+        >
+          <Filter class="h-4 w-4" />
+          Filter
+        </Button>
+        <RouterLink to="/discount/create">
+          <Button
+            class="bg-hijau hover:bg-hijautua text-white rounded-xl shadow-lg shadow-hijau/20 gap-2 px-5"
+          >
+            <Plus class="h-4 w-4" />
+            New Promo
+          </Button>
+        </RouterLink>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card class="bg-card/50 backdrop-blur-sm border-border/50 shadow-sm">
+        <CardContent class="p-5 flex items-center gap-4">
+          <div class="h-12 w-12 rounded-2xl bg-hijau/10 flex items-center justify-center">
+            <Zap class="h-6 w-6 text-hijau" />
           </div>
-          <!-- Add potential actions here like 'Create Order' -->
+          <div>
+            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              Active
+            </p>
+            <h3 class="text-xl font-black">12 Promos</h3>
+          </div>
+        </CardContent>
+      </Card>
+      <Card class="bg-card/50 border-border/50 shadow-sm">
+        <CardContent class="p-5 flex items-center gap-4">
+          <div class="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center">
+            <Clock class="h-6 w-6 text-amber-500" />
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              Expires Soon
+            </p>
+            <h3 class="text-xl font-black">3 Days</h3>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Main Table Card -->
+    <Card
+      class="flex-1 flex flex-col overflow-hidden shadow-xl border-border/50 bg-card/10 backdrop-blur-sm"
+    >
+      <CardHeader class="px-6 py-4 border-b border-border/50">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="relative w-full sm:w-96 group">
+            <Search
+              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-hijau transition-colors"
+            />
+            <Input
+              v-model="searchQuery"
+              placeholder="Search by promo code or description..."
+              class="pl-10 h-10 bg-white/50 border-muted group-hover:border-hijau/20 transition-all rounded-xl shadow-none"
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-muted-foreground uppercase">Show</span>
+            <Select v-model="rowPerPage">
+              <SelectTrigger class="h-10 w-20 bg-white/50 border-muted rounded-xl">
+                <SelectValue placeholder="10" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </CardHeader>
-      <CardContent class="flex-1 flex flex-col overflow-hidden p-0">
-        <div class="flex-1 overflow-auto relative">
-          <Table class="w-full">
-            <TableHeader class="sticky top-0 bg-background/95 backdrop-blur-sm border-b">
-              <TableRow class="hover:bg-transparent border-none">
+
+      <CardContent class="p-0 flex-1 overflow-hidden relative">
+        <div class="h-full overflow-auto scrollbar-thin">
+          <Table>
+            <TableHeader
+              class="sticky top-0 z-10 bg-card backdrop-blur-md border-b border-border/40"
+            >
+              <TableRow class="hover:bg-transparent">
                 <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Discount Code</TableHead
+                  class="pl-6 py-4 font-bold text-xs uppercase tracking-widest text-muted-foreground"
+                  >Promo Details</TableHead
                 >
                 <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Description</TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-muted-foreground"
+                  >Discount Info</TableHead
                 >
                 <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Type</TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-muted-foreground"
+                  >Eligibility</TableHead
                 >
                 <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Value</TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-muted-foreground"
+                  >Duration</TableHead
                 >
                 <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Min Purchase</TableHead
-                >
-                <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Max Discount</TableHead
-                >
-                <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Valid Days</TableHead
-                >
-                <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Time Start</TableHead
-                >
-                <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Time End</TableHead
-                >
-                <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >Start Date</TableHead
-                >
-                <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                  >End Date</TableHead
-                >
-                <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-muted-foreground text-center"
                   >Status</TableHead
                 >
                 <TableHead
-                  class="px-6 py-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap text-center"
-                  >Action</TableHead
+                  class="pr-6 py-4 font-bold text-xs uppercase tracking-widest text-muted-foreground text-right"
+                  >Actions</TableHead
                 >
               </TableRow>
             </TableHeader>
@@ -149,88 +227,142 @@ watch(
               <TableRow
                 v-for="item in discountStore.discounts?.data"
                 :key="item.id"
-                class="group border-b border-border/50 hover:bg-muted/30 transition-colors"
+                class="group border-b border-border/40 hover:bg-muted/30 transition-all duration-200"
               >
-                <TableCell class="px-6 py-4 text-foreground font-medium">
-                  {{ item.code }}
+                <TableCell class="pl-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="h-10 w-10 shrink-0 rounded-xl bg-hijau/10 flex items-center justify-center"
+                    >
+                      <Tag class="h-5 w-5 text-hijau" />
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold text-foreground uppercase tracking-wider">{{
+                        item.code
+                      }}</span>
+                      <span
+                        class="text-[10px] italic text-muted-foreground truncate max-w-[150px]"
+                        >{{ item.description }}</span
+                      >
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.description }}
+
+                <TableCell class="px-6 py-4">
+                  <div class="flex flex-col">
+                    <span class="font-black text-foreground">
+                      {{
+                        item.type === 'PERCENTAGE'
+                          ? `${item.value}%`
+                          : `Rp ${item.value.toLocaleString()}`
+                      }}
+                    </span>
+                    <span class="text-[10px] uppercase font-bold text-muted-foreground/60">{{
+                      item.type.replace('_', ' ')
+                    }}</span>
+                  </div>
                 </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.type }}
+
+                <TableCell class="px-6 py-4">
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-1.5 text-xs">
+                      <span class="text-muted-foreground font-medium">Min:</span>
+                      <span class="font-bold text-primary"
+                        >Rp {{ (item.min_purchase || 0).toLocaleString() }}</span
+                      >
+                    </div>
+                    <div class="flex flex-wrap gap-1">
+                      <Badge
+                        v-for="day in (item.valid_days || []).slice(0, 2)"
+                        :key="day"
+                        variant="secondary"
+                        class="text-[9px] px-1.5 py-0 rounded-md"
+                      >
+                        {{ day.slice(0, 3) }}
+                      </Badge>
+                      <span
+                        v-if="(item.valid_days || []).length > 2"
+                        class="text-[9px] text-muted-foreground"
+                        >+{{ item.valid_days.length - 2 }}</span
+                      >
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.value }}
+
+                <TableCell class="px-6 py-4">
+                  <div class="flex flex-col gap-1 text-[11px] font-medium text-muted-foreground">
+                    <div class="flex items-center gap-2">
+                      <span class="w-8 shrink-0">From</span>
+                      <span class="font-bold text-foreground">{{
+                        formatDate(item.start_date)
+                      }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-8 shrink-0">To</span>
+                      <span class="font-bold text-foreground">{{ formatDate(item.end_date) }}</span>
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.min_purchase ?? '-' }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.max_discount ?? '-' }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  <Badge v-for="vd in item.valid_days" :key="vd">
-                    {{ vd }}
+
+                <TableCell class="px-6 py-4 text-center">
+                  <Badge
+                    :class="
+                      cn(
+                        'rounded-full font-bold px-3 py-1 gap-1.5',
+                        item.is_active ? 'bg-hijau/10 text-hijau' : 'bg-rose-500/10 text-rose-500',
+                      )
+                    "
+                  >
+                    <div class="h-1.5 w-1.5 rounded-full bg-current"></div>
+                    {{ item.is_active ? 'Active' : 'Disabled' }}
                   </Badge>
                 </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.time_start ?? '-' }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.time_end ?? '-' }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ new Date(item.start_date).toISOString().split('T')[0] }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ new Date(item.end_date).toISOString().split('T')[0] }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-muted-foreground">
-                  {{ item.is_active }}
-                </TableCell>
-                <TableCell class="px-6 py-4 text-right">
+
+                <TableCell class="pr-6 py-4 text-right">
                   <div
-                    class="flex gap-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all"
                   >
-                    <RouterLink :to="`/product/edit/${item.id}`" title="Edit Order">
+                    <RouterLink :to="`/discount/edit/${item.id}`">
                       <Button
-                        size="icon"
                         variant="ghost"
-                        class="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                        size="icon"
+                        class="h-9 w-9 rounded-full hover:bg-hijau/10 hover:text-hijau"
                       >
-                        <EditIcon class="w-4 h-4" />
+                        <Edit3 class="h-4 w-4" />
                       </Button>
                     </RouterLink>
+
                     <Dialog>
                       <DialogTrigger as-child>
                         <Button
-                          size="icon"
                           variant="ghost"
-                          title="Delete Order"
-                          class="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                          size="icon"
+                          class="h-9 w-9 rounded-full hover:bg-destructive/10 hover:text-destructive"
                         >
-                          <DeleteIcon class="w-4 h-4" />
+                          <Trash2 class="h-4 w-4" />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent class="sm:max-w-[425px]">
+                      <DialogContent class="border-none shadow-2xl rounded-3xl">
                         <DialogHeader>
-                          <DialogTitle>Delete Order</DialogTitle>
-                          <DialogDescription class="mt-4">
-                            Are you sure you want to delete this order? This action cannot be
-                            undone.
+                          <DialogTitle class="text-2xl font-bold flex items-center gap-2">
+                            <AlertCircle class="h-6 w-6 text-destructive" />
+                            Archive Promo
+                          </DialogTitle>
+                          <DialogDescription class="pt-4 text-base">
+                            Are you sure you want to stop the
+                            <span class="font-black">{{ item.code }}</span> promo? Customers will no
+                            longer be able to use it.
                           </DialogDescription>
                         </DialogHeader>
-                        <DialogFooter class="flex gap-2 mt-6">
+                        <DialogFooter class="gap-3 mt-6">
                           <DialogClose as-child>
-                            <Button variant="outline" class="flex-1">Cancel</Button>
+                            <Button variant="ghost" class="rounded-xl flex-1 h-12">Cancel</Button>
                           </DialogClose>
                           <Button
-                            variant="destructive"
+                            class="bg-destructive hover:bg-destructive/90 text-white rounded-xl flex-1 h-12 font-bold"
                             @click="handleDelete(item.id)"
-                            class="flex-1"
                           >
-                            Delete Order
+                            Confirm Archive
                           </Button>
                         </DialogFooter>
                       </DialogContent>
@@ -238,62 +370,80 @@ watch(
                   </div>
                 </TableCell>
               </TableRow>
+
+              <!-- Empty State -->
+              <TableRow v-if="!discountStore.discounts?.data.length">
+                <TableCell colspan="6" class="h-[400px] text-center">
+                  <div
+                    class="flex flex-col items-center justify-center gap-4 text-muted-foreground/40"
+                  >
+                    <div
+                      class="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center"
+                    >
+                      <Ticket class="h-10 w-10" />
+                    </div>
+                    <div class="space-y-1">
+                      <h3 class="text-xl font-bold text-foreground">No promos configured</h3>
+                      <p class="text-sm">
+                        Create your first campaign to boost your sales engagement.
+                      </p>
+                    </div>
+                    <RouterLink to="/discount/create">
+                      <Button
+                        class="bg-hijau hover:bg-hijautua mt-2 px-8 rounded-xl shadow-lg shadow-hijau/20"
+                        >Launch Promo</Button
+                      >
+                    </RouterLink>
+                  </div>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>
+      </CardContent>
 
-        <!-- Sticky Footer for Pagination and Rows Per Page -->
-        <div
-          class="flex-none p-4 px-6 border-t flex flex-wrap items-center justify-between gap-4 bg-muted/10"
+      <!-- List Footer -->
+      <div
+        class="px-6 py-4 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-muted/5"
+      >
+        <p class="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+          Total Records: {{ discountStore.discounts?.pagination.total }}
+        </p>
+
+        <Pagination
+          v-if="discountStore.discounts?.pagination.total"
+          :items-per-page="Number(rowPerPage)"
+          :total="discountStore.discounts?.pagination.total"
+          :default-page="currentPage"
+          @update:page="(v) => (currentPage = v)"
         >
-          <div class="flex items-center gap-3">
-            <span class="text-sm text-muted-foreground whitespace-nowrap"> Rows per page </span>
-            <Select v-model="rowPerPage">
-              <SelectTrigger class="h-8 w-[70px] bg-background">
-                <SelectValue :placeholder="String(rowPerPage)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Pagination
-            v-if="discountStore.discounts?.pagination.total ?? 0 > 0"
-            v-slot="{ page }"
-            :items-per-page="discountStore.discounts?.pagination.pageSize || 10"
-            :total="discountStore.discounts?.pagination.total"
-            :default-page="currentPage"
-          >
-            <PaginationContent v-slot="{ items }">
-              <PaginationPrevious class="h-8" @click="currentPage > 1 && currentPage--" />
-
-              <template v-for="(item, index) in items" :key="index">
-                <PaginationItem
-                  v-if="item.type === 'page'"
-                  :value="item.value"
-                  :is-active="item.value === page"
-                  class="h-8 w-8 p-0"
-                  @click="currentPage = item.value"
+          <PaginationContent v-slot="{ items }">
+            <PaginationPrevious class="rounded-xl h-9 hover:bg-hijau/10 border-none" />
+            <template v-for="(item, index) in items">
+              <PaginationItem v-if="item.type === 'page'" :key="index" :value="item.value">
+                <Button
+                  class="w-9 h-9 p-0 rounded-xl transition-all"
+                  :variant="item.value === currentPage ? 'default' : 'outline'"
+                  :class="item.value === currentPage ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20' : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'"
                 >
                   {{ item.value }}
-                </PaginationItem>
-                <PaginationEllipsis
-                  v-else-if="item.type === 'ellipsis'"
-                  :key="item.type"
-                  :index="index"
-                />
-              </template>
-
-              <PaginationNext class="h-8" @click="goToNextPage" />
-            </PaginationContent>
-          </Pagination>
-        </div>
-      </CardContent>
+                </Button>
+              </PaginationItem>
+              <PaginationEllipsis v-else :key="item.type" :index="index" />
+            </template>
+            <PaginationNext class="rounded-xl h-9 hover:bg-hijau/10 border-none" />
+          </PaginationContent>
+        </Pagination>
+      </div>
     </Card>
   </div>
 </template>
+
+<style scoped>
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply rounded-full;
+}
+</style>
