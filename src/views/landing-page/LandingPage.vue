@@ -11,7 +11,7 @@ import {
   type ProductCategory,
   type ProductSummaryProps,
 } from '@/types/global.types'
-import type { ChartDataset } from 'chart.js'
+import type { ChartDataset, ChartOptions } from 'chart.js'
 import {
   Table,
   TableBody,
@@ -50,7 +50,7 @@ const chartData = ref({
   datasets: [] as ChartDataset<'bar', (number | [number, number] | null)[]>[],
 })
 
-const chartOption = {
+const chartOption: ChartOptions<'bar'> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -63,7 +63,7 @@ const chartOption = {
       cornerRadius: 8,
       titleFont: { size: 14, weight: 'bold' },
       bodyFont: { size: 12 },
-    }
+    },
   },
   scales: {
     y: {
@@ -73,8 +73,8 @@ const chartOption = {
       },
       ticks: {
         color: '#64748b',
-        font: { size: 11 }
-      }
+        font: { size: 11 },
+      },
     },
     x: {
       grid: {
@@ -82,10 +82,10 @@ const chartOption = {
       },
       ticks: {
         color: '#64748b',
-        font: { size: 11 }
-      }
-    }
-  }
+        font: { size: 11 },
+      },
+    },
+  },
 }
 
 watch(
@@ -160,73 +160,108 @@ onMounted(async () => {
     <!-- Header Section -->
     <div class="flex flex-col gap-1">
       <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
-      <p class="text-slate-500 text-sm font-medium">Monitoring your business performance at a glance.</p>
+      <p class="text-slate-500 text-sm font-medium">
+        Monitoring your business performance at a glance.
+      </p>
     </div>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
-      <div class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-hijau/10 transition-all duration-300">
+      <div
+        class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-hijau/10 transition-all duration-300"
+      >
         <div class="flex justify-between items-start">
           <div class="space-y-3">
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Total Sales</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400"
+              >Total Sales</span
+            >
             <div class="text-4xl font-extrabold text-slate-800 leading-none">
               {{ dataDashboardReport?.totalOrder || 0 }}
             </div>
-            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-hijau/10 text-hijautua text-[10px] font-bold">
+            <div
+              class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-hijau/10 text-hijautua text-[10px] font-bold"
+            >
               <span class="w-1.5 h-1.5 rounded-full bg-hijautua animate-pulse"></span>
               Live Tracking
             </div>
           </div>
-          <div class="p-4 bg-slate-50 rounded-xl group-hover:bg-hijau/20 group-hover:scale-110 transition-all duration-300">
+          <div
+            class="p-4 bg-slate-50 rounded-xl group-hover:bg-hijau/20 group-hover:scale-110 transition-all duration-300"
+          >
             <CartIcon class="w-6 h-6 text-slate-600 group-hover:text-hijautua transition-colors" />
           </div>
         </div>
         <div class="absolute -bottom-2 -left-2 w-24 h-24 bg-hijau/5 rounded-full blur-2xl"></div>
       </div>
 
-      <div class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-blue-500/10 transition-all duration-300">
+      <div
+        class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-blue-500/10 transition-all duration-300"
+      >
         <div class="flex justify-between items-start">
           <div class="space-y-3">
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Total Customer</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400"
+              >Total Customer</span
+            >
             <div class="text-4xl font-extrabold text-slate-800 leading-none">
               {{ dataDashboardReport?.totalCustomer || 0 }}
             </div>
-            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold">
+            <div
+              class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold"
+            >
               <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
               Active Users
             </div>
           </div>
-          <div class="p-4 bg-slate-50 rounded-xl group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-300">
-            <MultipleUserIcon class="w-6 h-6 text-slate-600 group-hover:text-blue-600 transition-colors" />
+          <div
+            class="p-4 bg-slate-50 rounded-xl group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-300"
+          >
+            <MultipleUserIcon
+              class="w-6 h-6 text-slate-600 group-hover:text-blue-600 transition-colors"
+            />
           </div>
         </div>
         <div class="absolute -bottom-2 -left-2 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
       </div>
 
-      <div class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+      <div
+        class="group relative bg-white md:col-span-2 overflow-hidden rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-200/50 hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300"
+      >
         <div class="flex justify-between items-start">
           <div class="space-y-3">
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Total Revenue</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400"
+              >Total Revenue</span
+            >
             <div class="text-4xl font-extrabold text-slate-800 leading-none">
-              <span class="text-2xl font-bold opacity-40">Rp</span> {{ dataDashboardReport?.totalRevenue || 0 }}
+              <span class="text-2xl font-bold opacity-40">Rp</span>
+              {{ dataDashboardReport?.totalRevenue || 0 }}
             </div>
-            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold">
+            <div
+              class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold"
+            >
               <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
               Earnings
             </div>
           </div>
-          <div class="p-4 bg-slate-50 rounded-xl group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300">
-            <MoneyIcon class="w-6 h-6 text-slate-600 group-hover:text-amber-600 transition-colors" />
+          <div
+            class="p-4 bg-slate-50 rounded-xl group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300"
+          >
+            <MoneyIcon
+              class="w-6 h-6 text-slate-600 group-hover:text-amber-600 transition-colors"
+            />
           </div>
         </div>
-        <div class="absolute -bottom-2 -left-2 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl"></div>
+        <div
+          class="absolute -bottom-2 -left-2 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl"
+        ></div>
       </div>
     </div>
 
     <!-- Main Content Sections -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
       <!-- Sales Overview Chart -->
-      <div class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden">
+      <div
+        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden"
+      >
         <div class="flex items-center justify-between mb-8">
           <div class="flex items-center gap-3 text-slate-800">
             <div class="p-2 bg-hijau/10 rounded-lg">
@@ -234,7 +269,7 @@ onMounted(async () => {
             </div>
             <h2 class="font-bold text-lg">Sales Overview</h2>
           </div>
-          
+
           <div class="flex gap-2">
             <Select v-model:modelValue="filterReport.category">
               <SelectTrigger class="h-8 w-32 text-xs border-slate-100 bg-slate-50/50 font-medium">
@@ -266,7 +301,9 @@ onMounted(async () => {
       </div>
 
       <!-- Top Selling Products Table -->
-      <div class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden">
+      <div
+        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden"
+      >
         <div class="flex items-center gap-3 text-slate-800 mb-8">
           <div class="p-2 bg-blue-50 rounded-lg">
             <PackageIcon class="w-5 h-5 text-blue-600" />
@@ -278,18 +315,37 @@ onMounted(async () => {
           <Table>
             <TableHeader class="sticky top-0 bg-slate-50/80 backdrop-blur-md">
               <TableRow class="hover:bg-transparent border-slate-100">
-                <TableHead class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Product</TableHead>
-                <TableHead class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Units Sold</TableHead>
-                <TableHead class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Revenue</TableHead>
+                <TableHead
+                  class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest"
+                  >Product</TableHead
+                >
+                <TableHead
+                  class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center"
+                  >Units Sold</TableHead
+                >
+                <TableHead
+                  class="py-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right"
+                  >Revenue</TableHead
+                >
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow v-for="item in totalOrderSum" :key="item.productid" class="group hover:bg-slate-50/50 border-slate-50 transition-colors">
+              <TableRow
+                v-for="item in totalOrderSum"
+                :key="item.productid"
+                class="group hover:bg-slate-50/50 border-slate-50 transition-colors"
+              >
                 <TableCell class="py-4 px-4">
-                  <div class="font-semibold text-slate-700 group-hover:text-hijautua transition-colors">{{ item.product_name }}</div>
+                  <div
+                    class="font-semibold text-slate-700 group-hover:text-hijautua transition-colors"
+                  >
+                    {{ item.product_name }}
+                  </div>
                 </TableCell>
                 <TableCell class="py-4 px-4 text-center">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold leading-none">
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold leading-none"
+                  >
                     {{ item.total_qty }}
                   </span>
                 </TableCell>
