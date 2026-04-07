@@ -453,7 +453,7 @@ const goBack = () => {
               </div>
 
               <!-- Switch -->
-              <FormField v-slot="{ value, handleChange }" name="is_active">
+              <FormField v-slot="{ componentField }" name="is_active">
                 <FormItem
                   class="md:col-span-2 flex flex-row items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100"
                 >
@@ -464,7 +464,10 @@ const goBack = () => {
                     </p>
                   </div>
                   <FormControl>
-                    <Switch :checked="value" @update:checked="handleChange" />
+                    <Switch
+                      :model-value="componentField.modelValue"
+                      @update:model-value="componentField['onUpdate:modelValue']"
+                    />
                   </FormControl>
                 </FormItem>
               </FormField>

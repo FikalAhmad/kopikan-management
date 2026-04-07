@@ -7,26 +7,23 @@ import { ref } from 'vue'
 export const useUserStore = defineStore(
   'user',
   () => {
-    const users = ref<
-      {
-        success: boolean
-        data: {
-
-          id: string
-          name: string
-          email: string
-          phone: string
-          role_id: string
-          role: { role_name: string }
-        }[]
-        pagination: {
-          total: number
-          page: number
-          pageSize: number
-          totalPages: number
-        }
+    const users = ref<{
+      success: boolean
+      data: {
+        id: string
+        name: string
+        email: string
+        phone: string
+        role_id: string
+        role: { role_name: string }
+      }[]
+      pagination: {
+        total: number
+        page: number
+        pageSize: number
+        totalPages: number
       }
-    >()
+    }>()
 
     const fetchUsers = async ({ page = '1', pageSize = '10' }: QueryParams = {}) => {
       try {
@@ -59,25 +56,35 @@ export const useUserStore = defineStore(
         )
         if (response.data) {
           fetchUsers()
-          window.location.href = '/user'
+          return true
         }
+        return false
       } catch (error) {
         console.error('Error creating user:', error)
+        return false
       }
     }
 
     const updateUser = async (
       id: string,
-      userData: { name?: string; password?: string; phone?: string },
+      userData: {
+        name?: string
+        email?: string
+        password?: string
+        phone?: string
+        role_id?: string
+      },
     ) => {
       try {
         const response = await axiosJWT.patch(`/api/users/${id}`, userData)
         if (response.data) {
           fetchUsers()
-          window.location.href = '/user'
+          return true
         }
+        return false
       } catch (error) {
         console.error('Error updating user:', error)
+        return false
       }
     }
 

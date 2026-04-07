@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import type { ProductProps } from '@/types/product.types'
 import { onMounted, ref } from 'vue'
 import { useProductStore } from '@/store/useProductStore'
 import { useRoute, useRouter } from 'vue-router'
@@ -56,7 +57,7 @@ const form = useForm({
 })
 
 // State for options
-const options = ref<any[]>([])
+const options = ref<ProductProps['options']>([])
 
 const addOption = () => {
   options.value.push({

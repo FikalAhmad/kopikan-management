@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Dialog,
   DialogClose,
@@ -30,32 +30,26 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
 import {
-  Plus,
   Search,
   Filter,
   Trash2,
   Edit3,
   Users,
-  Shield,
   ShieldCheck,
   UserCheck,
   Mail,
-  MoreVertical,
-  ChevronRight,
   UserPlus,
   AlertCircle,
-  User as UserIcon,
 } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useUserStore } from '@/store/useUserStore'
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { cn } from '@/lib/utils'
 
 const userStore = useUserStore()
@@ -139,9 +133,7 @@ watch(
             <ShieldCheck class="h-6 w-6 text-hijau" />
           </div>
           <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Total Users
-            </p>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Users</p>
             <h3 class="text-xl font-black">{{ userStore.users?.pagination.total || 0 }}</h3>
           </div>
         </CardContent>
@@ -155,7 +147,12 @@ watch(
             <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Active Admins
             </p>
-            <h3 class="text-xl font-black">--</h3>
+            <h3 class="text-xl font-black">
+              {{
+                userStore.users?.data.filter((user) => user.role_id === '67e3011960094b86083ac359')
+                  .length || 0
+              }}
+            </h3>
           </div>
         </CardContent>
       </Card>
@@ -178,9 +175,7 @@ watch(
             />
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest"
-              >Show</span
-            >
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Show</span>
             <Select v-model="rowPerPage">
               <SelectTrigger class="h-10 w-20 bg-white/50 border-slate-200 rounded-xl">
                 <SelectValue placeholder="10" />
@@ -324,9 +319,7 @@ watch(
               <!-- Empty State -->
               <TableRow v-if="!userStore.users?.data.length">
                 <TableCell colspan="4" class="h-[400px] text-center">
-                  <div
-                    class="flex flex-col items-center justify-center gap-4 text-slate-300"
-                  >
+                  <div class="flex flex-col items-center justify-center gap-4 text-slate-300">
                     <div
                       class="h-20 w-20 rounded-full bg-slate-50 flex items-center justify-center"
                     >
@@ -350,9 +343,12 @@ watch(
       </CardContent>
 
       <!-- List Footer -->
-      <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/10">
-        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-          Total Records: {{ userStore.users?.pagination.total }}
+      <div
+        class="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/10"
+      >
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          Showing {{ userStore.users?.data.length }} of
+          {{ userStore.users?.pagination.total }} results
         </p>
 
         <Pagination
@@ -369,7 +365,11 @@ watch(
                 <Button
                   class="w-9 h-9 p-0 rounded-xl transition-all"
                   :variant="item.value === currentPage ? 'default' : 'outline'"
-                  :class="item.value === currentPage ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20' : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'"
+                  :class="
+                    item.value === currentPage
+                      ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20'
+                      : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'
+                  "
                 >
                   {{ item.value }}
                 </Button>

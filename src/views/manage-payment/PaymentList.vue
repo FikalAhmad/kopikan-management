@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -32,7 +32,6 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -40,7 +39,6 @@ import {
 import {
   CreditCard,
   Search,
-  Filter,
   Trash2,
   Eye,
   Wallet,
@@ -49,9 +47,7 @@ import {
   TrendingUp,
   Download,
   AlertCircle,
-  CheckCircle2,
   Clock,
-  MoreVertical,
   Banknote,
   Receipt,
 } from 'lucide-vue-next'
@@ -124,9 +120,7 @@ const getMethodIcon = (method: string) => {
           <Banknote class="h-8 w-8 text-hijau" />
           Payments History
         </h1>
-        <p class="text-slate-500 mt-1">
-          Review settlements, payouts, and customer transactions.
-        </p>
+        <p class="text-slate-500 mt-1">Review settlements, payouts, and customer transactions.</p>
       </div>
       <div class="flex items-center gap-3">
         <Button
@@ -286,14 +280,12 @@ const getMethodIcon = (method: string) => {
                 <TableCell class="px-6 py-4">
                   <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
                     <Calendar class="h-3.5 w-3.5 text-slate-300" />
-                    {{ payment.payment_date }}
+                    {{ new Date(payment.payment_date).toLocaleString() }}
                   </div>
                 </TableCell>
 
                 <TableCell class="px-6 py-4">
-                  <span class="font-black text-foreground"
-                    >Rp {{ payment.amount.toLocaleString() }}</span
-                  >
+                  <span class="font-black text-foreground">Rp {{ payment.amount }}</span>
                 </TableCell>
 
                 <TableCell class="px-6 py-4 text-center">
@@ -387,9 +379,12 @@ const getMethodIcon = (method: string) => {
       </CardContent>
 
       <!-- List Footer -->
-      <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/10">
-        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">
-          Total {{ paymentStore.payments?.pagination.total }} Records found
+      <div
+        class="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/10"
+      >
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          Showing {{ paymentStore.payments?.data.length }} of
+          {{ paymentStore.payments?.pagination.total }} results
         </p>
 
         <Pagination
@@ -406,7 +401,11 @@ const getMethodIcon = (method: string) => {
                 <Button
                   class="w-9 h-9 p-0 rounded-xl transition-all"
                   :variant="item.value === currentPage ? 'default' : 'outline'"
-                  :class="item.value === currentPage ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20' : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'"
+                  :class="
+                    item.value === currentPage
+                      ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20'
+                      : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'
+                  "
                 >
                   {{ item.value }}
                 </Button>

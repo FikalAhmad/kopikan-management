@@ -152,9 +152,7 @@ const getStatusIcon = (status: string) => {
             <ShoppingCart class="h-6 w-6 text-hijau" />
           </div>
           <div>
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Total Orders
-            </p>
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Orders</p>
             <h3 class="text-xl font-bold">{{ orderStore.orders?.pagination.total || 0 }}</h3>
           </div>
         </CardContent>
@@ -165,9 +163,7 @@ const getStatusIcon = (status: string) => {
             <CreditCard class="h-6 w-6 text-hijau" />
           </div>
           <div>
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Revenue
-            </p>
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Revenue</p>
             <h3 class="text-xl font-bold">Rp --</h3>
           </div>
         </CardContent>
@@ -269,7 +265,7 @@ const getStatusIcon = (status: string) => {
                   <div class="flex items-center gap-2 max-w-[200px] text-slate-500">
                     <MapPin class="h-3.5 w-3.5 shrink-0 text-hijau/60" />
                     <span class="truncate text-xs tracking-tight" :title="order.delivery_address">
-                      {{ order.delivery_address || 'Take-away (No Address)' }}
+                      {{ order.delivery_address || 'Take-away' }}
                     </span>
                   </div>
                 </TableCell>
@@ -389,7 +385,11 @@ const getStatusIcon = (status: string) => {
                 <Button
                   class="w-9 h-9 p-0 rounded-xl transition-all"
                   :variant="item.value === currentPage ? 'default' : 'outline'"
-                  :class="item.value === currentPage ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20' : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'"
+                  :class="
+                    item.value === currentPage
+                      ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20'
+                      : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'
+                  "
                 >
                   {{ item.value }}
                 </Button>

@@ -73,7 +73,6 @@ const onSubmit = form.handleSubmit(async (values) => {
 })
 
 onMounted(async () => {
-  // Fetch Roles
   try {
     const roleResponse = await axiosJWT.get('/api/roles')
     if (roleResponse.data) {
@@ -83,7 +82,6 @@ onMounted(async () => {
     console.error('Error fetching roles:', error)
   }
 
-  // Load User Data
   const user = userStore.users?.data.find((u) => u.id === userId)
   if (user) {
     form.setValues({

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -32,7 +32,6 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -45,8 +44,6 @@ import {
   Edit3,
   Package,
   Coffee,
-  MoreVertical,
-  ChevronRight,
   TrendingUp,
   Box,
   LayoutGrid,
@@ -55,6 +52,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { useDebounce } from '@/hooks/useDebounce'
 
 const rowPerPage = ref<string>('10')
 const currentPage = ref<number>(1)
@@ -74,11 +72,17 @@ const goToNextPage = () => {
   }
 }
 
+const debouncedSearch = useDebounce(searchQuery, 500)
+const filtered = computed(() => {
+  return productStore.products?.data.filter((product) => {
+    return product.product_name.toLowerCase().includes(debouncedSearch.value.toLowerCase())
+  })
+})
+
 const categoryColors: Record<string, string> = {
   Signature: 'bg-hijau/10 text-hijau border-hijau/20',
   Coffee: 'bg-amber-700/10 text-amber-700 border-amber-700/20',
   NonCoffee: 'bg-hijau/10 text-hijau border-hijau/20',
-  Food: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
 }
 
 watch(
@@ -153,7 +157,7 @@ watch(
             <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Most Popular
             </p>
-            <h3 class="text-xl font-black">Arabica Latte</h3>
+            <h3 class="text-xl font-black">{{ productStore.products?.data[0].product_name }}</h3>
           </div>
         </CardContent>
       </Card>
@@ -163,10 +167,8 @@ watch(
             <LayoutGrid class="h-6 w-6 text-hijau" />
           </div>
           <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Categories
-            </p>
-            <h3 class="text-xl font-black">4 Active</h3>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Categories</p>
+            <h3 class="text-xl font-black">{{ Object.keys(categoryColors).length }} Active</h3>
           </div>
         </CardContent>
       </Card>
@@ -239,7 +241,7 @@ watch(
 
             <TableBody>
               <TableRow
-                v-for="item in productStore.products?.data"
+                v-for="item in filtered"
                 :key="item.id"
                 class="group border-b border-slate-100/50 hover:bg-slate-50/50 transition-all duration-200"
               >
@@ -258,8 +260,7 @@ watch(
                       <span class="font-bold text-foreground text-base">{{
                         item.product_name
                       }}</span>
-                      <span
-                        class="text-[10px] uppercase font-black tracking-widest text-slate-400"
+                      <span class="text-[10px] uppercase font-black tracking-widest text-slate-400"
                         >ID: {{ item.id.slice(-6) }}</span
                       >
                     </div>
@@ -271,7 +272,8 @@ watch(
                     :class="
                       cn(
                         'rounded-full font-bold px-3 py-1 border',
-                        categoryColors[item.category] || 'bg-slate-100 text-slate-600 border-slate-200',
+                        categoryColors[item.category] ||
+                          'bg-slate-100 text-slate-600 border-slate-200',
                       )
                     "
                   >
@@ -398,7 +400,11 @@ watch(
                 <Button
                   class="w-9 h-9 p-0 rounded-xl transition-all"
                   :variant="item.value === currentPage ? 'default' : 'outline'"
-                  :class="item.value === currentPage ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20' : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'"
+                  :class="
+                    item.value === currentPage
+                      ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20'
+                      : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'
+                  "
                 >
                   {{ item.value }}
                 </Button>

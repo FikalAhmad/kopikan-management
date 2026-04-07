@@ -138,7 +138,9 @@ const formatDate = (dateStr: string) => {
             <p class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
               Active
             </p>
-            <h3 class="text-xl font-black">12 Promos</h3>
+            <h3 class="text-xl font-black">
+              {{ discountStore.discounts?.data.filter((item) => item.is_active).length }} Promos
+            </h3>
           </div>
         </CardContent>
       </Card>
@@ -281,7 +283,7 @@ const formatDate = (dateStr: string) => {
                         {{ day.slice(0, 3) }}
                       </Badge>
                       <span
-                        v-if="(item.valid_days || []).length > 2"
+                        v-if="item.valid_days && item.valid_days.length > 2"
                         class="text-[9px] text-muted-foreground"
                         >+{{ item.valid_days.length - 2 }}</span
                       >
@@ -406,8 +408,9 @@ const formatDate = (dateStr: string) => {
       <div
         class="px-6 py-4 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-muted/5"
       >
-        <p class="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-          Total Records: {{ discountStore.discounts?.pagination.total }}
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+          Showing {{ discountStore.discounts?.data.length }} of
+          {{ discountStore.discounts?.pagination.total }} results
         </p>
 
         <Pagination
@@ -424,7 +427,11 @@ const formatDate = (dateStr: string) => {
                 <Button
                   class="w-9 h-9 p-0 rounded-xl transition-all"
                   :variant="item.value === currentPage ? 'default' : 'outline'"
-                  :class="item.value === currentPage ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20' : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'"
+                  :class="
+                    item.value === currentPage
+                      ? 'bg-hijau text-white border-hijau shadow-lg shadow-hijau/20'
+                      : 'border-slate-200 text-slate-600 hover:bg-hijau/5 hover:text-hijau'
+                  "
                 >
                   {{ item.value }}
                 </Button>

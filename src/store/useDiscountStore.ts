@@ -1,5 +1,6 @@
 import { axiosJWT } from '@/lib/axios'
 import type { DiscountProps } from '@/types/discount.types'
+import type { QueryParams } from '@/types/global.types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
