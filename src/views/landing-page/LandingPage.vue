@@ -23,7 +23,6 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -156,7 +155,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-full flex flex-col gap-6 p-6 md:p-8 bg-slate-50/30">
+  <div class="min-h-full flex flex-col gap-6 md:p-4 bg-slate-50/30">
     <!-- Header Section -->
     <div class="flex flex-col gap-1">
       <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
@@ -260,7 +259,7 @@ onMounted(async () => {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
       <!-- Sales Overview Chart -->
       <div
-        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden"
+        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-y-auto"
       >
         <div class="flex items-center justify-between mb-8">
           <div class="flex items-center gap-3 text-slate-800">

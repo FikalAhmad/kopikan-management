@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -63,14 +63,14 @@ const handleDelete = async (id: string) => {
   await productStore.deleteProduct(id)
 }
 
-const goToNextPage = () => {
-  const maxPage = Math.ceil(
-    (productStore.products?.pagination.total ?? 0) / Number(rowPerPage.value),
-  )
-  if (currentPage.value < maxPage) {
-    currentPage.value++
-  }
-}
+// const goToNextPage = () => {
+//   const maxPage = Math.ceil(
+//     (productStore.products?.pagination.total ?? 0) / Number(rowPerPage.value),
+//   )
+//   if (currentPage.value < maxPage) {
+//     currentPage.value++
+//   }
+// }
 
 const debouncedSearch = useDebounce(searchQuery, 500)
 const filtered = computed(() => {
@@ -102,7 +102,7 @@ watch(
 </script>
 
 <template>
-  <div class="p-6 space-y-6 flex flex-col h-full overflow-hidden">
+  <div class="p-6 space-y-6 flex flex-col min-[1080px]:h-full min-[1080px]:overflow-hidden">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
@@ -176,7 +176,7 @@ watch(
 
     <!-- Main Table Card -->
     <Card
-      class="flex-1 flex flex-col overflow-hidden shadow-xl border-slate-200 bg-white/10 backdrop-blur-sm"
+      class="flex-1 flex flex-col min-[1080px]:overflow-hidden shadow-xl border-slate-200 bg-white/10 backdrop-blur-sm"
     >
       <CardHeader class="px-6 py-4 border-b border-slate-100">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -209,8 +209,8 @@ watch(
         </div>
       </CardHeader>
 
-      <CardContent class="p-0 flex-1 overflow-hidden relative">
-        <div class="h-full overflow-auto scrollbar-thin">
+      <CardContent class="p-0 flex-1 min-[1080px]:overflow-hidden relative">
+        <div class="min-[1080px]:h-full overflow-x-auto min-[1080px]:overflow-auto scrollbar-thin">
           <Table>
             <TableHeader
               class="sticky top-0 z-10 bg-white backdrop-blur-md border-b border-slate-100"

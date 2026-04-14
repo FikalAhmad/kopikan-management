@@ -23,7 +23,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-screen overflow-hidden relative">
+  <div class="flex min-[1080px]:h-screen min-h-screen min-[1080px]:overflow-hidden relative">
     <!-- Overlay for screens < 1080px when sidebar is open -->
     <Transition
       enter-active-class="opacity-0"
@@ -47,9 +47,9 @@ onMounted(() => {
       <AppSidebar :visible="isSidebarVisible" />
     </div>
 
-    <div class="flex-1 min-w-0 h-screen flex flex-col">
+    <div class="flex-1 min-w-0 min-[1080px]:h-screen flex flex-col">
       <AppTopbar @toggle-sidebar="toggleSidebar" />
-      <main class="flex-1 flex flex-col min-h-0 w-full p-4 overflow-hidden bg-slate-50/50">
+      <main class="flex-1 flex flex-col min-h-0 w-full p-4 min-[1080px]:overflow-hidden overflow-x-hidden bg-slate-50/50">
         <RouterView />
       </main>
     </div>
