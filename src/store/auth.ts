@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from 'axios'
-import type { User } from '@/types/auth.types'
+import type { AuthUser } from '@/types/auth.types'
 import { jwtDecode } from 'jwt-decode'
 import { axiosJWT } from '@/lib/axios'
 
@@ -9,7 +9,7 @@ export const useAuthStore = defineStore(
   'auth',
   () => {
     // State
-    const user = ref<User | null>(null)
+    const user = ref<AuthUser | null>(null)
     const token = ref<string | null>(null)
 
     // Getters
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore(
         )
 
         if (response.data) {
-          const decoded = jwtDecode<User>(response.data.accessToken)
+          const decoded = jwtDecode<AuthUser>(response.data.accessToken)
 
           if (decoded.role_name !== 'Admin' && decoded.role_id !== '67e3011960094b86083ac359') {
             throw new Error('Akses ditolak. Hanya Admin yang diperbolehkan masuk.')
@@ -59,7 +59,7 @@ export const useAuthStore = defineStore(
           },
           withCredentials: true,
         })
-        const decoded = jwtDecode<User>(response.data.accessToken)
+        const decoded = jwtDecode<AuthUser>(response.data.accessToken)
 
         if (decoded.role_name !== 'Admin' && decoded.role_id !== '67e3011960094b86083ac359') {
           logout()

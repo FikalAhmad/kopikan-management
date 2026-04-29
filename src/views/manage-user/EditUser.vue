@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useUserStore } from '@/store/useUserStore'
 import { useRoute, useRouter } from 'vue-router'
 import { axiosJWT } from '@/lib/axios'
@@ -28,10 +28,8 @@ import {
   Shield,
   Eye,
   EyeOff,
-  CheckCircle2,
   Info,
   ShieldCheck,
-  Settings2,
   Save,
 } from 'lucide-vue-next'
 
@@ -99,7 +97,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="p-6 w-full mx-auto space-y-6 overflow-y-auto scrollbar-hide">
+  <div class="p-6 w-full mx-auto space-y-6 overflow-y-auto">
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-10">
       <div class="flex items-center gap-4">
@@ -114,7 +112,6 @@ const goBack = () => {
         <div>
           <h1 class="text-3xl font-black tracking-tight text-foreground flex items-center gap-2">
             Update Profile
-            <Settings2 class="h-5 w-5 text-hijau" />
           </h1>
           <p class="text-sm font-medium text-slate-500">
             Modify user properties and permission levels.
@@ -352,13 +349,3 @@ const goBack = () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-</style>

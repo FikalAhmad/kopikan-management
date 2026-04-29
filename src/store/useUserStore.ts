@@ -25,9 +25,11 @@ export const useUserStore = defineStore(
       }
     }>()
 
-    const fetchUsers = async ({ page = '1', pageSize = '10' }: QueryParams = {}) => {
+    const fetchUsers = async ({ page = '1', pageSize = '10', search = '' }: QueryParams = {}) => {
       try {
-        const response = await axiosJWT.get(`/api/users?page=${page}&pageSize=${pageSize}`)
+        const response = await axiosJWT.get(
+          `/api/users?page=${page}&pageSize=${pageSize}&search=${search}`,
+        )
         if (response.data) {
           users.value = response.data
         }
@@ -97,7 +99,17 @@ export const useUserStore = defineStore(
       }
     }
 
-    return { users, fetchUsers, createUser, updateUser, deleteUser }
+    const getAllUsers = async () => {
+      try {
+        const response = await axiosJWT.get(`/api/users?page=1&pageSize=1000`)
+        return response.data?.data || []
+      } catch (error) {
+        console.error('Error fetching all users:', error)
+        return []
+      }
+    }
+
+    return { users, fetchUsers, createUser, updateUser, deleteUser, getAllUsers }
   },
   {
     persist: {

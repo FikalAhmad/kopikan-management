@@ -36,7 +36,6 @@ import {
 } from '@/components/ui/select'
 import {
   Search,
-  Filter,
   Trash2,
   Edit3,
   Users,
@@ -45,25 +44,28 @@ import {
   Mail,
   UserPlus,
   AlertCircle,
+  Phone,
 } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useUserStore } from '@/store/useUserStore'
 import { ref, watch } from 'vue'
 import { cn } from '@/lib/utils'
+import ExportData from '@/lib/ExportData.vue'
 
 const userStore = useUserStore()
 const rowPerPage = ref<string>('10')
 const currentPage = ref<number>(1)
 const searchQuery = ref('')
-
-const handleDelete = async (id: string) => {
-  await userStore.deleteUser(id)
-}
+let searchTimeout: ReturnType<typeof setTimeout>
 
 const roleBadges: Record<string, string> = {
   '67e3011960094b86083ac359': 'bg-hijau/10 text-hijau border-hijau/20', // Admin
   '6800a52eea8560606cbc4a25': 'bg-[#44911f]/10 text-[#44911f] border-[#44911f]/20', // Staff/Others
+}
+
+const handleDelete = async (id: string) => {
+  await userStore.deleteUser(id)
 }
 
 const getInitials = (name: string) => {
@@ -75,49 +77,59 @@ const getInitials = (name: string) => {
     .slice(0, 2)
 }
 
+const fetchUsersReq = async () => {
+  try {
+    await userStore.fetchUsers({
+      page: currentPage.value.toString(),
+      pageSize: rowPerPage.value.toString(),
+      search: searchQuery.value,
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 watch(
   () => [currentPage.value, rowPerPage.value],
-  async () => {
-    try {
-      await userStore.fetchUsers({
-        page: currentPage.value.toString(),
-        pageSize: rowPerPage.value,
-      })
-    } catch (error) {
-      console.error(error)
-    }
+  () => {
+    fetchUsersReq()
   },
   { immediate: true },
 )
+
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    if (currentPage.value !== 1) {
+      currentPage.value = 1 // This triggers the watch above
+    } else {
+      fetchUsersReq() // Call directly if already on page 1
+    }
+  }, 1000)
+})
 </script>
 
 <template>
-  <div class="p-6 space-y-6 flex flex-col min-[1080px]:h-full min-[1080px]:overflow-hidden">
+  <div class="p-6 space-y-6 flex flex-col">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
           <Users class="h-8 w-8 text-hijau" />
-          Team Management
+          User Management
         </h1>
         <p class="text-slate-500 mt-1">
           Manage system access, roles, and administrative permissions.
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <Button
-          variant="outline"
-          class="hidden md:flex gap-2 rounded-xl border-muted-foreground/20 backdrop-blur-sm"
-        >
-          <Filter class="h-4 w-4" />
-          Roles
-        </Button>
+        <ExportData endpoint="users" />
         <RouterLink to="/user/create">
           <Button
             class="bg-hijau hover:bg-hijautua text-white rounded-xl shadow-lg shadow-hijau/20 gap-2 px-5 font-bold"
           >
             <UserPlus class="h-4 w-4" />
-            Add Member
+            Add User
           </Button>
         </RouterLink>
       </div>
@@ -165,13 +177,11 @@ watch(
       <CardHeader class="px-6 py-4 border-b border-slate-100">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="relative w-full sm:w-96 group">
-            <Search
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-hijau transition-colors"
-            />
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               v-model="searchQuery"
               placeholder="Search by name, email or role..."
-              class="pl-10 h-10 bg-white/50 border-slate-200 group-hover:border-hijau/20 transition-all rounded-xl shadow-none"
+              class="pl-10 h-10 bg-white/50 border-slate-200"
             />
           </div>
           <div class="flex items-center gap-2">
@@ -199,7 +209,7 @@ watch(
               <TableRow class="hover:bg-transparent">
                 <TableHead
                   class="pl-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
-                  >Team Member</TableHead
+                  >User</TableHead
                 >
                 <TableHead
                   class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
@@ -208,6 +218,10 @@ watch(
                 <TableHead
                   class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
                   >Email Status</TableHead
+                >
+                <TableHead
+                  class="px-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500"
+                  >Phone Number</TableHead
                 >
                 <TableHead
                   class="pr-6 py-4 font-bold text-xs uppercase tracking-widest text-slate-500 text-right"
@@ -231,12 +245,6 @@ watch(
                     </div>
                     <div class="flex flex-col">
                       <span class="font-bold text-foreground">{{ user.name }}</span>
-                      <div
-                        class="flex items-center gap-1.5 text-[10px] text-slate-400 font-medium uppercase tracking-tight"
-                      >
-                        <Mail class="h-3 w-3" />
-                        {{ user.email }}
-                      </div>
                     </div>
                   </div>
                 </TableCell>
@@ -250,15 +258,23 @@ watch(
                       )
                     "
                   >
-                    <Shield class="h-3 w-3 mr-1.5" />
                     {{ user.role.role_name }}
                   </Badge>
                 </TableCell>
 
                 <TableCell class="px-6 py-4">
+                  <div
+                    class="flex items-center gap-1.5 text-[10px] text-slate-400 font-medium uppercase tracking-tight"
+                  >
+                    <Mail class="h-3 w-3" />
+                    {{ user.email }}
+                  </div>
+                </TableCell>
+
+                <TableCell class="px-6 py-4">
                   <div class="flex items-center gap-2">
-                    <div class="h-2 w-2 rounded-full bg-hijau animate-pulse"></div>
-                    <span class="text-xs font-semibold text-foreground italic">Verified</span>
+                    <Phone class="h-3 w-3" />
+                    {{ user.phone }}
                   </div>
                 </TableCell>
 
@@ -383,12 +399,3 @@ watch(
     </Card>
   </div>
 </template>
-
-<style scoped>
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply rounded-full;
-}
-</style>

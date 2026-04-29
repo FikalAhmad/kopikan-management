@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import axios from 'axios'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { useAuthStore } from '@/store/auth'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import * as z from 'zod'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Coffee, Mail, Lock, LogIn, Loader2 } from 'lucide-vue-next'
+import { Mail, Lock, LogIn, Loader2 } from 'lucide-vue-next'
 
 const isLoading = ref(false)
 const errorMessage = ref('')
@@ -30,10 +31,10 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
   errorMessage.value = ''
   try {
     await authStore.login(values.email, values.password)
-  } catch (error: any) {
-    if (error.response?.data?.msg) {
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data?.msg) {
       errorMessage.value = error.response.data.msg
-    } else if (error.message) {
+    } else if (error instanceof Error) {
       errorMessage.value = error.message
     } else {
       errorMessage.value = 'Email atau password salah'
@@ -48,16 +49,6 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
   <div
     class="relative flex min-h-screen items-center justify-center overflow-hidden font-sans selection:bg-hijau/30 selection:text-hijau"
   >
-    <!-- Sophisticated Background -->
-    <div class="fixed inset-0 z-0">
-      <img
-        src="/images/login-bg.png"
-        alt="Coffee Shop Background"
-        class="h-full w-full object-cover opacity-40 scale-105 animate-pulse-slow"
-      />
-      <div class="absolute inset-0 bg-gradient-to-tr from-black via-black/60 to-transparent"></div>
-    </div>
-
     <!-- Login Container -->
     <div class="relative z-10 w-full max-w-md px-6 py-12">
       <!-- Brand Logo / Header -->
@@ -67,7 +58,7 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
         >
           <img src="/images/logo-cup-white.webp" alt="Logo" class="w-14 h-14 object-cover" />
         </div>
-        <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-sm">
+        <h1 class="text-4xl font-bold tracking-tight text-hijautua drop-shadow-sm">
           Kopikan
           <span class="bg-gradient-to-r from-hijau to-hijautua bg-clip-text text-transparent"
             >Management</span
@@ -80,12 +71,6 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
       <Card
         class="border-white/10 bg-white backdrop-blur-2xl overflow-hidden transition-all duration-500 hover:border-hijau/30"
       >
-        <!-- <CardHeader class="pb-2 space-y-1">
-          <CardTitle class="text-2xl font-bold text-white tracking-tight">Login</CardTitle>
-          <CardDescription class="text-zinc-400 font-medium"
-            >Masuk untuk mengelola kedai kopimu</CardDescription
-          >
-        </CardHeader> -->
         <CardContent>
           <div
             v-if="errorMessage"
@@ -110,7 +95,7 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
                     <Input
                       v-bind="componentField"
                       type="email"
-                      placeholder="admin@kopikan.com"
+                      placeholder="Enter your email"
                       class="border-white/10 pl-11 h-12 placeholder:text-zinc-600 focus:border-hijau/50 focus:ring-hijau/20 transition-all rounded-xl border-2"
                     />
                   </FormControl>
@@ -186,24 +171,3 @@ const onSubmit = formLogin.handleSubmit(async (values) => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.animate-pulse-slow {
-  animation: pulse-slow 20s infinite alternate ease-in-out;
-}
-
-@keyframes pulse-slow {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.15);
-  }
-}
-
-/* Custom transitions for form inputs */
-:deep(.form-field-enter-active),
-:deep(.form-field-leave-active) {
-  transition: all 0.3s ease;
-}
-</style>

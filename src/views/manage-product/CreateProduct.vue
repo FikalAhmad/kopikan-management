@@ -22,7 +22,6 @@ import { Label } from '@/components/ui/label'
 import {
   ArrowLeft,
   PackagePlus,
-  Package,
   Tag,
   DollarSign,
   Layers,
@@ -230,7 +229,9 @@ const goBack = () => {
               </div>
             </div>
 
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex gap-3 items-start mt-6">
+            <div
+              class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex gap-3 items-start mt-6"
+            >
               <Info class="h-5 w-5 text-hijau mt-0.5" />
               <p class="text-xs text-slate-500 leading-relaxed">
                 Products will appear in the customer menu immediately after creation if category is

@@ -30,8 +30,6 @@ import {
   EyeOff,
   CheckCircle2,
   Info,
-  ChevronRight,
-  Sparkles,
 } from 'lucide-vue-next'
 
 const router = useRouter()
@@ -93,7 +91,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="p-6 w-full mx-auto space-y-6 overflow-y-auto scrollbar-hide">
+  <div class="p-6 w-full mx-auto space-y-6 overflow-y-auto">
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-10">
       <div class="flex items-center gap-4">
@@ -108,7 +106,6 @@ const goBack = () => {
         <div>
           <h1 class="text-3xl font-black tracking-tight text-foreground flex items-center gap-2">
             Onboard Member
-            <Sparkles class="h-5 w-5 text-hijau" />
           </h1>
           <p class="text-sm text-slate-500 font-medium">
             Grant system access and define operational responsibilities.
@@ -348,13 +345,3 @@ const goBack = () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-</style>

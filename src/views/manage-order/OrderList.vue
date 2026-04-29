@@ -37,9 +37,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import {
-  Plus,
   Search,
-  Filter,
   Trash2,
   Eye,
   MoreVertical,
@@ -54,37 +52,48 @@ import {
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import ExportData from '@/lib/ExportData.vue'
 
 const rowPerPage = ref<string>('10')
 const currentPage = ref<number>(1)
 const orderStore = useOrderStore()
 const searchQuery = ref('')
+let searchTimeout: ReturnType<typeof setTimeout>
 
 const handleDelete = async (id: string) => {
   await orderStore.deleteOrder(id)
 }
 
-// const goToNextPage = () => {
-//   const maxPage = Math.ceil((orderStore.orders?.pagination.total ?? 0) / Number(rowPerPage.value))
-//   if (currentPage.value < maxPage) {
-//     currentPage.value++
-//   }
-// }
+const fetchOrdersReq = async () => {
+  try {
+    await orderStore.fetchOrders({
+      page: currentPage.value.toString(),
+      pageSize: rowPerPage.value.toString(),
+      search: searchQuery.value,
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 watch(
   () => [currentPage.value, rowPerPage.value],
-  async () => {
-    try {
-      await orderStore.fetchOrders({
-        page: currentPage.value.toString(),
-        pageSize: rowPerPage.value,
-      })
-    } catch (error) {
-      console.error(error)
-    }
+  () => {
+    fetchOrdersReq()
   },
   { immediate: true },
 )
+
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    if (currentPage.value !== 1) {
+      currentPage.value = 1 // This triggers the watch above
+    } else {
+      fetchOrdersReq() // Call directly if already on page 1
+    }
+  }, 1000)
+})
 
 const getStatusColor = (status: string) => {
   switch (status.toUpperCase()) {
@@ -114,7 +123,7 @@ const getStatusIcon = (status: string) => {
 </script>
 
 <template>
-  <div class="p-6 space-y-6 flex flex-col min-[1080px]:h-full min-[1080px]:overflow-hidden">
+  <div class="p-6 space-y-6 flex flex-col">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
@@ -125,19 +134,7 @@ const getStatusIcon = (status: string) => {
         <p class="text-slate-500 mt-1">Monitor and manage every transaction in real-time.</p>
       </div>
       <div class="flex items-center gap-3">
-        <Button
-          variant="outline"
-          class="hidden md:flex gap-2 rounded-xl border-slate-200 bg-white/50"
-        >
-          <Filter class="h-4 w-4" />
-          Filter
-        </Button>
-        <Button
-          class="bg-hijau hover:bg-hijautua text-white rounded-xl shadow-lg shadow-hijau/20 gap-2 px-5"
-        >
-          <Plus class="h-4 w-4" />
-          New Transaction
-        </Button>
+        <ExportData endpoint="orders" />
       </div>
     </div>
 
@@ -175,14 +172,12 @@ const getStatusIcon = (status: string) => {
     >
       <CardHeader class="px-6 py-4 border-b border-slate-100">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="relative w-full sm:w-96 group">
-            <Search
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-hijau transition-colors"
-            />
+          <div class="relative w-full sm:w-96">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               v-model="searchQuery"
               placeholder="Search by Customer ID or Address..."
-              class="pl-10 h-10 bg-white/50 border-slate-200 group-hover:border-hijau/20 transition-all rounded-xl shadow-none focus-visible:ring-hijau/20"
+              class="pl-10 h-10 bg-white/50 border-slate-200"
             />
           </div>
           <div class="flex items-center gap-2">
@@ -402,15 +397,3 @@ const getStatusIcon = (status: string) => {
     </Card>
   </div>
 </template>
-
-<style scoped>
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply rounded-full;
-}
-.header-premium {
-  @apply shadow-[0_1px_0_0_rgba(0,0,0,0.05)];
-}
-</style>

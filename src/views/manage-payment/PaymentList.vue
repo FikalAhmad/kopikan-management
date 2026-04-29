@@ -43,9 +43,7 @@ import {
   Eye,
   Wallet,
   Calendar,
-  DollarSign,
   TrendingUp,
-  Download,
   AlertCircle,
   Clock,
   Banknote,
@@ -54,6 +52,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import ExportData from '@/lib/ExportData.vue'
 
 const paymentStore = usePaymentStore()
 const rowPerPage = ref<string>('10')
@@ -112,7 +111,7 @@ const getMethodIcon = (method: string) => {
 </script>
 
 <template>
-  <div class="p-6 space-y-6 flex flex-col min-[1080px]:h-full min-[1080px]:overflow-hidden">
+  <div class="p-6 space-y-6 flex flex-col">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
@@ -123,37 +122,12 @@ const getMethodIcon = (method: string) => {
         <p class="text-slate-500 mt-1">Review settlements, payouts, and customer transactions.</p>
       </div>
       <div class="flex items-center gap-3">
-        <Button
-          variant="outline"
-          class="hidden md:flex gap-2 rounded-xl border-slate-200 bg-white/50 backdrop-blur-sm"
-        >
-          <Download class="h-4 w-4 text-hijau" />
-          Export Report
-        </Button>
-        <Button
-          class="bg-hijau hover:bg-hijautua text-white rounded-xl shadow-lg shadow-hijau/20 gap-2 px-5"
-        >
-          <CreditCard class="h-4 w-4" />
-          Verify Payment
-        </Button>
+        <ExportData endpoint="payments" />
       </div>
     </div>
 
     <!-- Quick Stats Summary -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <Card class="bg-white/50 backdrop-blur-sm border-slate-200 shadow-sm">
-        <CardContent class="p-5 flex items-center gap-4">
-          <div class="h-12 w-12 rounded-2xl bg-hijau/10 flex items-center justify-center">
-            <DollarSign class="h-6 w-6 text-hijau" />
-          </div>
-          <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Total Amount
-            </p>
-            <h3 class="text-xl font-black">Rp --</h3>
-          </div>
-        </CardContent>
-      </Card>
       <Card class="bg-white/50 border-slate-200 shadow-sm">
         <CardContent class="p-5 flex items-center gap-4">
           <div class="h-12 w-12 rounded-2xl bg-hijau/10 flex items-center justify-center">
@@ -188,14 +162,12 @@ const getMethodIcon = (method: string) => {
     >
       <CardHeader class="px-6 py-4 border-b border-slate-100">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="relative w-full sm:w-96 group">
-            <Search
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-hijau transition-colors"
-            />
+          <div class="relative w-full sm:w-96">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               v-model="searchQuery"
               placeholder="Search by Payment ID or Order #..."
-              class="pl-10 h-10 bg-white/50 border-slate-200 group-hover:border-hijau/20 transition-all rounded-xl shadow-none"
+              class="pl-10 h-10 bg-white/50 border-slate-200"
             />
           </div>
           <div class="flex items-center gap-3">
@@ -419,15 +391,3 @@ const getMethodIcon = (method: string) => {
     </Card>
   </div>
 </template>
-
-<style scoped>
-.header-premium {
-  @apply shadow-[0_1px_0_0_rgba(0,0,0,0.05)];
-}
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply rounded-full;
-}
-</style>

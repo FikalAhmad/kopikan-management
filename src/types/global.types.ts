@@ -45,4 +45,5 @@ export type TotalOrderSummaryProps = {
 export type QueryParams = {
   page?: string
   pageSize?: string
+  search?: string
 }

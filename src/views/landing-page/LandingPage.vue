@@ -29,12 +29,13 @@ import {
 } from '@/components/ui/select'
 import { AnalyticIcon, PackageIcon } from '@/lib/icons'
 
+const productDataSales = ref<ProductSummaryProps[]>()
+const totalOrderSum = ref<TotalOrderSummaryProps[]>()
+const dataDashboardReport = ref<TotalDashboardSummary>()
 const filterReport = ref<{ period: string; category: string }>({
   period: '1y',
   category: 'signature',
 })
-const productDataSales = ref<ProductSummaryProps[]>()
-const dataDashboardReport = ref<TotalDashboardSummary>()
 const dataProductReport = ref<{ getProductReport: ProductCategory }>({
   getProductReport: {
     coffee: [],
@@ -42,8 +43,6 @@ const dataProductReport = ref<{ getProductReport: ProductCategory }>({
     signature: [],
   },
 })
-const totalOrderSum = ref<TotalOrderSummaryProps[]>()
-
 const chartData = ref({
   labels: [] as string[],
   datasets: [] as ChartDataset<'bar', (number | [number, number] | null)[]>[],
@@ -256,10 +255,10 @@ onMounted(async () => {
     </div>
 
     <!-- Main Content Sections -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-4">
       <!-- Sales Overview Chart -->
       <div
-        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-y-auto"
+        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 min-h-[450px]"
       >
         <div class="flex items-center justify-between mb-8">
           <div class="flex items-center gap-3 text-slate-800">
@@ -294,14 +293,14 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div class="flex-1 w-full min-h-[300px]">
+        <div class="flex-1 w-full min-h-0">
           <BarChart :chartData="chartData" :chartOptions="chartOption" />
         </div>
       </div>
 
       <!-- Top Selling Products Table -->
       <div
-        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 overflow-hidden"
+        class="flex flex-col bg-white rounded-2xl border border-slate-100 shadow-sm shadow-slate-200/50 p-6 min-h-[450px] overflow-hidden"
       >
         <div class="flex items-center gap-3 text-slate-800 mb-8">
           <div class="p-2 bg-blue-50 rounded-lg">
@@ -365,26 +364,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Optional: Soft transitions for chart container */
-.flex-1 {
-  transition: height 0.3s ease;
-}
-
-/* Custom scrollbar for table container */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
-</style>

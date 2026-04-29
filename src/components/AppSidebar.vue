@@ -5,7 +5,7 @@
   >
     <div class="w-48 shrink-0 py-4 flex items-center gap-2">
       <img src="/images/logo-cup-hijau.webp" alt="Logo" class="w-12" />
-       <div class="text-2xl font-bold text-gray-800">Kopikan Coffee</div>
+      <div class="text-2xl font-bold text-gray-800">Kopikan</div>
     </div>
     <div class="flex flex-col justify-center px-4 gap-3 w-72 whitespace-nowrap overflow-x-hidden">
       <div class="text-xs px-4 font-bold text-gray-500 mt-2 uppercase tracking-wider">OVERVIEW</div>
@@ -13,7 +13,9 @@
         <HomeIcon :class="['group-hover:text-white', isActive ? 'text-white' : 'text-gray-500']" />
         Home</AppNavLink
       >
-      <div class="text-xs px-4 font-bold text-gray-500 mt-2 uppercase tracking-wider">MANAGEMENT</div>
+      <div class="text-xs px-4 font-bold text-gray-500 mt-2 uppercase tracking-wider">
+        MANAGEMENT
+      </div>
 
       <AppNavLink to="/user" class="flex gap-3 items-center" v-slot="{ isActive }"
         ><UserIcon
@@ -49,15 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  AnalyticIcon,
-  DiscountIcon,
-  HomeIcon,
-  OrderIcon,
-  PaymentIcon,
-  ProductIcon,
-  UserIcon,
-} from '@/lib/icons'
+import { DiscountIcon, HomeIcon, OrderIcon, PaymentIcon, ProductIcon, UserIcon } from '@/lib/icons'
 import AppNavLink from './ui/AppNavLink.vue'
 
 defineProps<{ visible: boolean }>()

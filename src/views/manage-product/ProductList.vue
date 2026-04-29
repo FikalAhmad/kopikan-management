@@ -102,7 +102,7 @@ watch(
 </script>
 
 <template>
-  <div class="p-6 space-y-6 flex flex-col min-[1080px]:h-full min-[1080px]:overflow-hidden">
+  <div class="p-6 space-y-6 flex flex-col">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
@@ -180,14 +180,12 @@ watch(
     >
       <CardHeader class="px-6 py-4 border-b border-slate-100">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="relative w-full sm:w-96 group">
-            <Search
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-hijau transition-colors"
-            />
+          <div class="relative w-full sm:w-96">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               v-model="searchQuery"
               placeholder="Search products by name or category..."
-              class="pl-10 h-10 bg-white/50 border-slate-200 group-hover:border-hijau/20 transition-all rounded-xl shadow-none focus-visible:ring-hijau/20"
+              class="pl-10 h-10 bg-white/50 border-slate-200"
             />
           </div>
           <div class="flex items-center gap-3">

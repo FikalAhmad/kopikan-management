@@ -41,7 +41,7 @@ onMounted(() => {
     <div
       :class="[
         !isLargeScreen ? 'fixed top-0 left-0 bottom-0 z-50' : 'relative shrink-0',
-        'transition-all duration-500'
+        'transition-all duration-500',
       ]"
     >
       <AppSidebar :visible="isSidebarVisible" />
@@ -49,7 +49,7 @@ onMounted(() => {
 
     <div class="flex-1 min-w-0 min-[1080px]:h-screen flex flex-col">
       <AppTopbar @toggle-sidebar="toggleSidebar" />
-      <main class="flex-1 flex flex-col min-h-0 w-full p-4 min-[1080px]:overflow-hidden overflow-x-hidden bg-slate-50/50">
+      <main class="flex-1 flex flex-col min-h-0 w-full p-4 overflow-y-auto overflow-x-hidden bg-slate-50/50">
         <RouterView />
       </main>
     </div>

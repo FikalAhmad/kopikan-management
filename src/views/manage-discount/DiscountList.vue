@@ -92,7 +92,7 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-  <div class="p-6 space-y-6 flex flex-col min-[1080px]:h-full min-[1080px]:overflow-hidden">
+  <div class="p-6 space-y-6 flex flex-col">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
@@ -161,12 +161,12 @@ const formatDate = (dateStr: string) => {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="relative w-full sm:w-96 group">
             <Search
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-hijau transition-colors"
+              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
             />
             <Input
               v-model="searchQuery"
               placeholder="Search by promo code or description..."
-              class="pl-10 h-10 bg-white/50 border-muted group-hover:border-hijau/20 transition-all rounded-xl shadow-none"
+              class="pl-10 h-10 bg-white/50 border-muted"
             />
           </div>
           <div class="flex items-center gap-2">
